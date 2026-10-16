@@ -1,55 +1,51 @@
 import React from 'react';
-import { View, Text, Pressable, Linking } from 'react-native';
+import { Text, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { colors } from '../theme/colors';
-
-const BLOG_URL = 'https://YOUR_DOMAIN.com'; // ← change this
-
-const samplePosts = [
-  { slug: 'getting-started', title: 'Getting Started' },
-  { slug: 'local-first-arch', title: 'Local-First Architecture' },
-];
+import { posts } from '../data/posts';
+import BlogCard from '../components/BlogCard';
 
 export default function BlogScreen() {
-  const openPost = (slug: string) => {
-    Linking.openURL(`${BLOG_URL}/blog/${slug}`);
-  };
+  const navigation = useNavigation<any>();
 
   return (
-    <View className="flex-1 p-5" style={{ backgroundColor: colors.bg }}>
+    <ScrollView
+      className="flex-1"
+      style={{ backgroundColor: colors.bg }}
+      contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+    >
       <Text
         className="text-xs font-mono uppercase mb-2"
         style={{ color: colors.indigo }}
       >
-        Phase 1 • Blog list
+        Writing
       </Text>
       <Text
-        className="text-2xl font-extrabold mb-6"
+        className="text-3xl font-extrabold mb-3"
         style={{ color: colors.text }}
       >
         Blog
       </Text>
+      <Text
+        className="text-sm leading-6 mb-8"
+        style={{ color: colors.textMuted }}
+      >
+        Tutorials, tips, and insights on programming, architecture, and modern
+        web development.
+      </Text>
 
-      {samplePosts.map(post => (
-        <Pressable
+      {posts.map(post => (
+        <BlogCard
           key={post.slug}
-          onPress={() => openPost(post.slug)}
-          className="p-4 rounded-xl border mb-3"
-          style={{
-            backgroundColor: colors.bgMuted,
-            borderColor: colors.border,
-          }}
-        >
-          <Text
-            className="text-base font-semibold"
-            style={{ color: colors.text }}
-          >
-            {post.title}
-          </Text>
-          <Text className="text-xs mt-1" style={{ color: colors.textDim }}>
-            Opens in browser → {BLOG_URL}/blog/{post.slug}
-          </Text>
-        </Pressable>
+          post={post}
+          onPress={() =>
+            navigation.navigate('BlogPost', {
+              url: post.url,
+              title: post.title,
+            })
+          }
+        />
       ))}
-    </View>
+    </ScrollView>
   );
 }

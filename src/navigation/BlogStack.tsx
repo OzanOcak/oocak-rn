@@ -1,6 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BlogScreen from '../screens/BlogScreen';
+import BlogPostScreen from '../screens/BlogPostScreen';
 import { colors } from '../theme/colors';
 
 const Stack = createNativeStackNavigator();
@@ -18,6 +19,13 @@ export default function BlogStack() {
         name="BlogList"
         component={BlogScreen}
         options={{ title: 'Blog' }}
+      />
+      <Stack.Screen
+        name="BlogPost"
+        component={BlogPostScreen}
+        options={({ route }: any) => ({
+          title: route.params?.title ?? 'Post',
+        })}
       />
     </Stack.Navigator>
   );
