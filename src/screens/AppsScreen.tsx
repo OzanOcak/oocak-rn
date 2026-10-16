@@ -1,43 +1,93 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, ScrollView } from 'react-native';
 import { colors } from '../theme/colors';
+import { appsByCategory } from '../data/apps';
+import AppCard from '../components/AppCard';
 
 export default function AppsScreen() {
-  const navigation = useNavigation<any>();
-
   return (
-    <View className="flex-1 p-5" style={{ backgroundColor: colors.bg }}>
+    <ScrollView
+      className="flex-1"
+      style={{ backgroundColor: colors.bg }}
+      contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+    >
+      {/* Header */}
       <Text
         className="text-xs font-mono uppercase mb-2"
         style={{ color: colors.emerald }}
       >
-        Phase 1 • Apps list
-      </Text>
-      <Text
-        className="text-2xl font-extrabold mb-6"
-        style={{ color: colors.text }}
-      >
         Software Catalog
       </Text>
-
-      <Pressable
-        onPress={() =>
-          navigation.navigate('AppDetail', {
-            slug: 'gofrench',
-            title: 'Go French',
-          })
-        }
-        className="p-5 rounded-2xl border mb-4"
-        style={{ backgroundColor: colors.bgMuted, borderColor: colors.border }}
+      <Text
+        className="text-3xl font-extrabold mb-3"
+        style={{ color: colors.text }}
       >
-        <Text className="text-lg font-bold" style={{ color: colors.text }}>
-          Go French
-        </Text>
-        <Text className="text-sm mt-1" style={{ color: colors.textMuted }}>
-          Tap to open detail (Phase 2 will make this real)
-        </Text>
-      </Pressable>
-    </View>
+        Apps I&apos;ve Built
+      </Text>
+      <Text
+        className="text-sm leading-6 mb-8"
+        style={{ color: colors.textMuted }}
+      >
+        A living catalog of everything I&apos;ve built, learned, and
+        open-sourced.
+      </Text>
+
+      {/* Mobile */}
+      <View className="mb-8">
+        <View className="flex-row items-center gap-3 mb-4">
+          <View
+            className="w-1 h-5 rounded-full"
+            style={{ backgroundColor: colors.emerald }}
+          />
+          <Text
+            className="text-xs font-mono font-bold uppercase tracking-wider"
+            style={{ color: colors.emerald }}
+          >
+            Mobile Apps
+          </Text>
+        </View>
+        {appsByCategory.mobile.map(app => (
+          <AppCard key={app.slug} app={app} />
+        ))}
+      </View>
+
+      {/* Desktop */}
+      <View className="mb-8">
+        <View className="flex-row items-center gap-3 mb-4">
+          <View
+            className="w-1 h-5 rounded-full"
+            style={{ backgroundColor: colors.purple }}
+          />
+          <Text
+            className="text-xs font-mono font-bold uppercase tracking-wider"
+            style={{ color: colors.purple }}
+          >
+            Desktop Apps
+          </Text>
+        </View>
+        {appsByCategory.desktop.map(app => (
+          <AppCard key={app.slug} app={app} />
+        ))}
+      </View>
+
+      {/* Architecture */}
+      <View className="mb-8">
+        <View className="flex-row items-center gap-3 mb-4">
+          <View
+            className="w-1 h-5 rounded-full"
+            style={{ backgroundColor: colors.indigo }}
+          />
+          <Text
+            className="text-xs font-mono font-bold uppercase tracking-wider"
+            style={{ color: colors.indigo }}
+          >
+            Architecture & Security
+          </Text>
+        </View>
+        {appsByCategory.architecture.map(app => (
+          <AppCard key={app.slug} app={app} />
+        ))}
+      </View>
+    </ScrollView>
   );
 }

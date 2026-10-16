@@ -25,16 +25,16 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer theme={navTheme}>
-        <RootStack.Navigator
-          screenOptions={{
-            header: () => <Header />,
-          }}
-        >
-          <RootStack.Screen name="Root" component={RootTabs} />
+        <RootStack.Navigator>
+          <RootStack.Screen
+            name="Root"
+            component={RootTabs}
+            options={{ header: () => <Header /> }}
+          />
           <RootStack.Screen
             name="Profile"
             component={ProfileScreen}
-            options={{ headerShown: true }}
+            options={{ title: 'Profile' }}
           />
         </RootStack.Navigator>
       </NavigationContainer>

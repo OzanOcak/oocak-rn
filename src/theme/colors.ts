@@ -19,3 +19,13 @@ export const colors = {
   amber: '#f59e0b',
   blue: '#3b82f6',
 };
+
+export type AccentName = 'emerald' | 'purple' | 'indigo' | 'amber' | 'blue';
+
+export const accents: Record<AccentName, string> = {
+  emerald: colors.emerald,
+  purple: colors.purple,
+  indigo: colors.indigo,
+  amber: colors.amber,
+  blue: colors.blue,
+};
