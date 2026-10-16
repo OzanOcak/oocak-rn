@@ -1,11 +1,43 @@
-import { View, Text } from 'react-native';
+import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import RootTabs from './src/navigation/RootTabs';
+import ProfileScreen from './src/screens/ProfileScreen';
+import Header from './src/components/Header';
+import { colors } from './src/theme/colors';
+
+const RootStack = createNativeStackNavigator();
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.bg,
+    card: colors.bg,
+    text: colors.text,
+    border: colors.border,
+    primary: colors.emerald,
+  },
+};
 
 export default function App() {
   return (
-    <View className="flex-1 items-center justify-center bg-slate-950">
-      <Text className="text-emerald-500 text-2xl font-bold">
-        NativeWind works 🎉
-      </Text>
-    </View>
+    <SafeAreaProvider>
+      <NavigationContainer theme={navTheme}>
+        <RootStack.Navigator
+          screenOptions={{
+            header: () => <Header />,
+          }}
+        >
+          <RootStack.Screen name="Root" component={RootTabs} />
+          <RootStack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={{ headerShown: true }}
+          />
+        </RootStack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
