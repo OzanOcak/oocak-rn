@@ -10,6 +10,7 @@ export interface AppItem {
   metrics: string;
   category: AppCategory;
   accent: AppAccent;
+  appStoreUrl?: string;
 }
 
 export const apps: AppItem[] = [
@@ -23,6 +24,7 @@ export const apps: AppItem[] = [
     metrics: 'Grammar • Active Recall',
     category: 'mobile',
     accent: 'emerald',
+    appStoreUrl: 'https://apps.apple.com/us/app/gofrench/id6802869115',
   },
   {
     slug: 'frontendpro',
@@ -33,6 +35,7 @@ export const apps: AppItem[] = [
     metrics: 'React • TypeScript • Web Architecture',
     category: 'mobile',
     accent: 'emerald',
+    appStoreUrl: 'https://apps.apple.com/ca/app/frontend-pro/id6754517273',
   },
   {
     slug: 'smartwords',
@@ -43,6 +46,8 @@ export const apps: AppItem[] = [
     metrics: '30k+ Words • 200k Questions',
     category: 'mobile',
     accent: 'emerald',
+    appStoreUrl:
+      'https://apps.apple.com/ca/app/smart-words-dictionary/id6748163293',
   },
   // ===== Desktop =====
   {
