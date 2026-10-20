@@ -4,6 +4,7 @@ import GoFrenchScreen from '../screens/apps/GoFrenchScreen';
 import AuthFlowScreen from '../screens/apps/AuthFlowScreen';
 import FrontendProScreen from '../screens/apps/FrontendProScreen';
 import MacCleanerScreen from '../screens/apps/MacCleanerScreen';
+import MarkleScreen from '../screens/apps/MarkleScreen';
 
 export type AppScreenEntry = {
   screenName: string;
@@ -42,5 +43,10 @@ export const APP_SCREEN_REGISTRY: Record<string, AppScreenEntry> = {
     screenName: 'MacCleaner',
     title: 'Mac Cleaner for Devs',
     component: MacCleanerScreen,
+  },
+  markle: {
+    screenName: 'Markle',
+    title: 'Markle',
+    component: MarkleScreen,
   },
 };
