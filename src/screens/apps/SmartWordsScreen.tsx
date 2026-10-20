@@ -183,8 +183,7 @@ export default function SmartWordsScreen() {
         accent="indigo"
         heading="Build Your Mastery Today"
         body="Download Smart Words Dictionary and get complete offline access to 30,000+ words and 200,000+ interactive questions."
-        buttonLabel="Download on App Store"
-        buttonUrl={APP_STORE_URL}
+        primaryCta={{ label: 'Download on App Store', url: APP_STORE_URL }}
       />
     </ScrollView>
   );

@@ -81,8 +81,7 @@ export default function GoFrenchScreen() {
         accent="amber"
         heading="Start Your French Adventure Today"
         body="Master 93 chapters, explore 25 rich stories, and practice oral pronunciation with your local beaver guide."
-        buttonLabel="Download on the App Store"
-        buttonUrl={APP_STORE_URL}
+        primaryCta={{ label: 'Download on App Store', url: APP_STORE_URL }}
       />
     </ScrollView>
   );

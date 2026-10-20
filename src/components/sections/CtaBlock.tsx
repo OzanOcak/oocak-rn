@@ -3,20 +3,22 @@ import { View, Text, Pressable, Linking } from 'react-native';
 import { Download } from 'lucide-react-native';
 import { AccentName, getAccent } from '../../theme/colors';
 
+type Cta = { label: string; url: string };
+
 type Props = {
   accent?: AccentName;
   heading: string;
   body: string;
-  buttonLabel: string;
-  buttonUrl: string;
+  primaryCta: Cta;
+  secondaryCta?: Cta;
 };
 
 export default function CtaBlock({
   accent = 'indigo',
   heading,
   body,
-  buttonLabel,
-  buttonUrl,
+  primaryCta,
+  secondaryCta,
 }: Props) {
   const a = getAccent(accent);
 
@@ -33,13 +35,22 @@ export default function CtaBlock({
           {body}
         </Text>
         <Pressable
-          onPress={() => Linking.openURL(buttonUrl)}
+          onPress={() => Linking.openURL(primaryCta.url)}
           className="py-3.5 rounded-xl items-center flex-row justify-center gap-2"
           style={{ backgroundColor: '#0f172a' }}
         >
           <Download size={16} color={a.light} />
-          <Text className="text-white font-bold">{buttonLabel}</Text>
+          <Text className="text-white font-bold">{primaryCta.label}</Text>
         </Pressable>
+        {secondaryCta ? (
+          <Pressable
+            onPress={() => Linking.openURL(secondaryCta.url)}
+            className="py-3.5 rounded-xl items-center border"
+            style={{ borderColor: 'rgba(255,255,255,0.3)' }}
+          >
+            <Text className="text-white font-bold">{secondaryCta.label}</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
