@@ -6,6 +6,7 @@ import RootTabs from './src/navigation/RootTabs';
 import ProfileScreen from './src/screens/ProfileScreen';
 import Header from './src/components/Header';
 import { colors } from './src/theme/colors';
+import { Providers } from './src/providers/Providers';
 
 const RootStack = createNativeStackNavigator();
 
@@ -23,21 +24,23 @@ const navTheme = {
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer theme={navTheme}>
-        <RootStack.Navigator>
-          <RootStack.Screen
-            name="Root"
-            component={RootTabs}
-            options={{ header: () => <Header /> }}
-          />
-          <RootStack.Screen
-            name="Profile"
-            component={ProfileScreen}
-            options={{ title: 'Profile' }}
-          />
-        </RootStack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <Providers>
+      <SafeAreaProvider>
+        <NavigationContainer theme={navTheme}>
+          <RootStack.Navigator>
+            <RootStack.Screen
+              name="Root"
+              component={RootTabs}
+              options={{ header: () => <Header /> }}
+            />
+            <RootStack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: 'Profile' }}
+            />
+          </RootStack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </Providers>
   );
 }
