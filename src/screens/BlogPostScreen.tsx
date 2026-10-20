@@ -176,12 +176,12 @@ export default function BlogPostScreen() {
         {post.date ?? 'Blog Post'}
       </Text>
 
-      <Text
+      {/*<Text
         className="text-3xl font-extrabold mb-6"
         style={{ color: colors.text }}
       >
         {post.title}
-      </Text>
+      </Text>*/}
 
       <Markdown style={markdownStyles} rules={rules}>
         {post.content}

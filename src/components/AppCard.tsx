@@ -16,12 +16,16 @@ export default function AppCard({ app }: Props) {
 
   return (
     <Pressable
-      onPress={() =>
-        navigation.navigate('AppsTab', {
-          screen: 'AppDetail',
-          params: { slug: app.slug },
-        })
-      }
+      onPress={() => {
+        if (app.slug === 'smartwords') {
+          navigation.navigate('AppsTab', { screen: 'SmartWords' });
+        } else {
+          navigation.navigate('AppsTab', {
+            screen: 'AppDetail',
+            params: { slug: app.slug },
+          });
+        }
+      }}
       className="p-5 rounded-2xl border mb-4"
       style={{
         backgroundColor: colors.bgMuted,

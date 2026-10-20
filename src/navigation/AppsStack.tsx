@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AppsScreen from '../screens/AppsScreen';
 import AppDetailScreen from '../screens/AppDetailScreen';
 import { colors } from '../theme/colors';
+import SmartWordsScreen from '../screens/apps/SmartWordsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,11 @@ export default function AppsStack() {
         name="AppsList"
         component={AppsScreen}
         options={{ title: 'Apps' }}
+      />
+      <Stack.Screen
+        name="SmartWords"
+        component={SmartWordsScreen}
+        options={{ title: 'Smart Words Dictionary' }}
       />
       <Stack.Screen
         name="AppDetail"
