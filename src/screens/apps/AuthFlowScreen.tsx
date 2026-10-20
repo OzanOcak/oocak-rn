@@ -87,7 +87,10 @@ export default function AuthFlowScreen() {
         primaryCta={{ label: 'View on GitHub', url: GITHUB_URL }}
         secondaryCta={{ label: 'Read Blog Post', url: BLOG_URL }}
         bullets={['JWT Security', 'MFA Support', 'Role-Based Access']}
-        media={{ source: GIF, width: 340, height: 240 }}
+        media={{
+          source: GIF,
+          height: 240,
+        }}
       />
 
       <StatsStrip
