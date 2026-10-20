@@ -1,3 +1,4 @@
+import axios, { AxiosRequestConfig } from 'axios';
 import { Platform } from 'react-native';
 
 /**
@@ -15,12 +16,23 @@ export const API_BASE = __DEV__
 /**
  * Custom error thrown by `http()`.
  * Carries the HTTP status + the request path for debugging.
+ *
+ * `status` is `null` when there was no HTTP response:
+ *   - network failure (offline, DNS, server down)
+ *   - request timeout
+ *   - request aborted (AbortController)
+ *   - malformed URL
+ *
+ * Distinguish `null` (no response) from `4xx/5xx` (server responded with error)
+ * in the UI to show the right message.
  */
 export class HttpError extends Error {
-  status: number;
+  status: number | null;
   path: string;
-  constructor(status: number, path: string) {
-    super(`HTTP ${status} — ${path}`);
+  constructor(status: number | null, path: string) {
+    super(
+      status != null ? `HTTP ${status} — ${path}` : `Network error — ${path}`,
+    );
     this.name = 'HttpError';
     this.status = status;
     this.path = path;
@@ -28,7 +40,7 @@ export class HttpError extends Error {
 }
 
 /**
- * Thin wrapper around fetch.
+ * Thin wrapper around axios.
  *
  * - Prefixes the API_BASE
  * - Parses JSON
@@ -39,22 +51,34 @@ export class HttpError extends Error {
  * add them here — one place, every endpoint benefits.
  */
 export async function http<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...init,
+  const config: AxiosRequestConfig = {
+    url: path,
+    baseURL: API_BASE,
+    method: (init?.method as AxiosRequestConfig['method']) ?? 'GET',
     headers: {
       'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
+      ...(init?.headers as Record<string, string> | undefined),
     },
-  });
+    data: init?.body,
+  };
 
-  if (!res.ok) {
-    throw new HttpError(res.status, path);
+  try {
+    const res = await axios.request<T>(config);
+
+    // axios leaves data undefined for 204
+    if (res.status === 204) {
+      return undefined as T;
+    }
+
+    return res.data;
+  } catch (err) {
+    // axios throws on non-2xx and on network errors.
+    // Map both into HttpError so callers get one error shape.
+    if (axios.isAxiosError(err)) {
+      const status = err.response?.status ?? null;
+      throw new HttpError(status, path);
+    }
+    // Non-axios error (shouldn't happen, but don't swallow it)
+    throw err;
   }
-
-  // 204 No Content — no body to parse
-  if (res.status === 204) {
-    return undefined as T;
-  }
-
-  return (await res.json()) as T;
 }
