@@ -5,6 +5,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 import { colors, accents } from '../theme/colors';
 import type { AppItem } from '../data/apps';
 import AppIconPlaceholder from './AppIconPlaceholder';
+import { openApp } from '../navigation/openApp';
 
 type Props = {
   app: AppItem;
@@ -37,10 +38,7 @@ export default function FeatureCard({
     .filter(Boolean);
 
   const goToDetail = () => {
-    navigation.navigate('AppsTab', {
-      screen: 'AppDetail',
-      params: { slug: app.slug },
-    });
+    openApp(navigation, app.slug);
   };
 
   const onSecondary = () => {
@@ -69,7 +67,12 @@ export default function FeatureCard({
           {IconOverride ? (
             <IconOverride size={24} color={accent} />
           ) : (
-            <AppIconPlaceholder title={app.title} accent={accent} size={28} />
+            <AppIconPlaceholder
+              title={app.title}
+              accent={accent}
+              size={28}
+              iconKey={app.iconKey}
+            />
           )}
         </View>
       </View>
