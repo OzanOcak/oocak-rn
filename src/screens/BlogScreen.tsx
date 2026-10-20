@@ -1,12 +1,70 @@
-import React from 'react';
-import { Text, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  View,
+  Platform,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../theme/colors';
-import { posts } from '../data/posts';
 import BlogCard from '../components/BlogCard';
+
+const API_BASE = __DEV__
+  ? Platform.OS === 'android'
+    ? 'http://10.0.2.2:5173'
+    : 'http://localhost:5173'
+  : 'https://oocak.com';
+
+type Post = {
+  slug: string;
+  title: string;
+  description: string;
+  date?: string;
+  url: string;
+};
 
 export default function BlogScreen() {
   const navigation = useNavigation<any>();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    fetch(`${API_BASE}/api/posts`)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data: Post[]) => {
+        if (!cancelled) {
+          const sorted = [...data].sort((a, b) => {
+            // Dates are "DD.MM.YYYY" — convert to comparable numbers
+            const toNum = (d?: string) => {
+              if (!d) return 0;
+              const [day, month, year] = d.split('.');
+              return Number(`${year}${month}${day}`); // YYYYMMDD
+            };
+            return toNum(b.date) - toNum(a.date); // newest first
+          });
+          setPosts(sorted);
+        }
+      })
+      .catch(e => {
+        if (!cancelled) setError(e.message ?? 'Failed to load');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <ScrollView
@@ -34,18 +92,33 @@ export default function BlogScreen() {
         web development.
       </Text>
 
-      {posts.map(post => (
-        <BlogCard
-          key={post.slug}
-          post={post}
-          onPress={() =>
-            navigation.navigate('BlogPost', {
-              url: post.url,
-              title: post.title,
-            })
-          }
-        />
-      ))}
+      {loading ? (
+        <View className="py-10 items-center">
+          <ActivityIndicator color={colors.emerald} />
+        </View>
+      ) : error ? (
+        <View className="py-10 items-center">
+          <Text className="text-sm mb-2" style={{ color: colors.text }}>
+            Couldn&apos;t load posts
+          </Text>
+          <Text className="text-xs" style={{ color: colors.textMuted }}>
+            {error}
+          </Text>
+        </View>
+      ) : (
+        posts.map(post => (
+          <BlogCard
+            key={post.slug}
+            post={post}
+            onPress={() =>
+              navigation.navigate('BlogPost', {
+                slug: post.slug,
+                title: post.title,
+              })
+            }
+          />
+        ))
+      )}
     </ScrollView>
   );
 }

@@ -19,6 +19,9 @@ export default function BlogCard({ post, onPress }: Props) {
       <Text className="text-base font-bold mb-2" style={{ color: colors.text }}>
         {post.title}
       </Text>
+      <Text className="text-[10px] font-mono" style={{ color: colors.textDim }}>
+        {post.date}
+      </Text>
 
       <Text
         className="text-sm leading-5 mb-4"
