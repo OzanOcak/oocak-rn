@@ -3,6 +3,7 @@ import SmartWordsScreen from '../screens/apps/SmartWordsScreen';
 import GoFrenchScreen from '../screens/apps/GoFrenchScreen';
 import AuthFlowScreen from '../screens/apps/AuthFlowScreen';
 import FrontendProScreen from '../screens/apps/FrontendProScreen';
+import MacCleanerScreen from '../screens/apps/MacCleanerScreen';
 
 export type AppScreenEntry = {
   screenName: string;
@@ -36,5 +37,10 @@ export const APP_SCREEN_REGISTRY: Record<string, AppScreenEntry> = {
     screenName: 'FrontendPro',
     title: 'Frontend Pro',
     component: FrontendProScreen,
+  },
+  maccleaner: {
+    screenName: 'MacCleaner',
+    title: 'Mac Cleaner for Devs',
+    component: MacCleanerScreen,
   },
 };
