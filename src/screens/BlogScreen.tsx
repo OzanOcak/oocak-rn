@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { colors } from '../theme/colors';
 import BlogCard from '../components/BlogCard';
 import { useQuery } from '@tanstack/react-query';
-import { fetchPosts } from '../lib/api';
+import { fetchPosts } from '../lib/blog_api/post_list';
 
 export default function BlogScreen() {
   const navigation = useNavigation<any>();

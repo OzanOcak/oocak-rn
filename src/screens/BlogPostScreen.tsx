@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,16 +9,8 @@ import { useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Markdown from 'react-native-markdown-display';
 import { colors } from '../theme/colors';
-
-const API_BASE = 'https://oocak.com';
-
-type Post = {
-  slug: string;
-  title: string;
-  description: string;
-  date?: string;
-  content: string;
-};
+import { fetchPost } from '../lib/blog_api/post';
+import { useQuery } from '@tanstack/react-query';
 
 // Custom render rules for fences — smaller font for ```text diagrams
 const rules = {
@@ -59,40 +50,17 @@ export default function BlogPostScreen() {
   const insets = useSafeAreaInsets();
   const slug = route.params?.slug as string | undefined;
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!slug) {
-      setError('No post slug provided');
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-
-    fetch(`${API_BASE}/api/posts/${slug}`)
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((data: Post) => {
-        if (!cancelled) setPost(data);
-      })
-      .catch(e => {
-        if (!cancelled) setError(e.message ?? 'Failed to load');
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
+  const {
+    data: post,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['post', slug],
+    queryFn: () => fetchPost(slug!),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 30, // 30 min — post content rarely changes
+  });
 
   if (!slug) {
     return (
@@ -105,7 +73,7 @@ export default function BlogPostScreen() {
     );
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View
         className="flex-1 items-center justify-center"
@@ -132,25 +100,10 @@ export default function BlogPostScreen() {
           className="text-xs mb-4 text-center"
           style={{ color: colors.textMuted }}
         >
-          {error ?? 'Unknown error'}
+          {(error as Error)?.message ?? 'Unknown error'}
         </Text>
         <Pressable
-          onPress={() => {
-            setError(null);
-            setLoading(true);
-            if (slug) {
-              fetch(`${API_BASE}/api/posts/${slug}`)
-                .then(r => r.json())
-                .then(data => {
-                  setPost(data);
-                  setLoading(false);
-                })
-                .catch(e => {
-                  setError(e.message);
-                  setLoading(false);
-                });
-            }
-          }}
+          onPress={() => refetch()}
           className="px-4 py-2 rounded-lg"
           style={{ backgroundColor: colors.emerald }}
         >
