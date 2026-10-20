@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react-native';
 import { colors, accents } from '../theme/colors';
 import type { AppItem } from '../data/apps';
 import AppIconPlaceholder from './AppIconPlaceholder';
+import { openApp } from '../navigation/openApp';
 
 type Props = {
   app: AppItem;
@@ -16,16 +17,7 @@ export default function AppCard({ app }: Props) {
 
   return (
     <Pressable
-      onPress={() => {
-        if (app.slug === 'smartwords') {
-          navigation.navigate('AppsTab', { screen: 'SmartWords' });
-        } else {
-          navigation.navigate('AppsTab', {
-            screen: 'AppDetail',
-            params: { slug: app.slug },
-          });
-        }
-      }}
+      onPress={() => openApp(navigation, app.slug)}
       className="p-5 rounded-2xl border mb-4"
       style={{
         backgroundColor: colors.bgMuted,
