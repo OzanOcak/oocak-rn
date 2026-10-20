@@ -2,6 +2,7 @@ import React from 'react';
 import SmartWordsScreen from '../screens/apps/SmartWordsScreen';
 import GoFrenchScreen from '../screens/apps/GoFrenchScreen';
 import AuthFlowScreen from '../screens/apps/AuthFlowScreen';
+import FrontendProScreen from '../screens/apps/FrontendProScreen';
 
 export type AppScreenEntry = {
   screenName: string;
@@ -30,5 +31,10 @@ export const APP_SCREEN_REGISTRY: Record<string, AppScreenEntry> = {
     screenName: 'AuthFlow',
     title: 'AuthFlow',
     component: AuthFlowScreen,
+  },
+  frontendpro: {
+    screenName: 'FrontendPro',
+    title: 'Frontend Pro',
+    component: FrontendProScreen,
   },
 };
