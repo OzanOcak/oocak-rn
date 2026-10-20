@@ -1,6 +1,7 @@
 import React from 'react';
 import SmartWordsScreen from '../screens/apps/SmartWordsScreen';
 import GoFrenchScreen from '../screens/apps/GoFrenchScreen';
+import AuthFlowScreen from '../screens/apps/AuthFlowScreen';
 
 export type AppScreenEntry = {
   screenName: string;
@@ -24,5 +25,10 @@ export const APP_SCREEN_REGISTRY: Record<string, AppScreenEntry> = {
     screenName: 'GoFrench',
     title: 'Go French',
     component: GoFrenchScreen,
+  },
+  authflow: {
+    screenName: 'AuthFlow',
+    title: 'AuthFlow',
+    component: AuthFlowScreen,
   },
 };
