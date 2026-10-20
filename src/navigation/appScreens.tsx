@@ -5,6 +5,7 @@ import AuthFlowScreen from '../screens/apps/AuthFlowScreen';
 import FrontendProScreen from '../screens/apps/FrontendProScreen';
 import MacCleanerScreen from '../screens/apps/MacCleanerScreen';
 import MarkleScreen from '../screens/apps/MarkleScreen';
+import FullscreenSliderScreen from '../screens/apps/FullscreenSliderScreen';
 
 export type AppScreenEntry = {
   screenName: string;
@@ -48,5 +49,10 @@ export const APP_SCREEN_REGISTRY: Record<string, AppScreenEntry> = {
     screenName: 'Markle',
     title: 'Markle',
     component: MarkleScreen,
+  },
+  'oocak-fullscreen-slider': {
+    screenName: 'FullscreenSlider',
+    title: 'Fullscreen Slider',
+    component: FullscreenSliderScreen,
   },
 };
