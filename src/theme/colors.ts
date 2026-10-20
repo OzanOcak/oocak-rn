@@ -29,3 +29,23 @@ export const accents: Record<AccentName, string> = {
   amber: colors.amber,
   blue: colors.blue,
 };
+
+// Used by reusable section components (Hero, StatsStrip, FeatureList, etc.)
+// where a single color isn't enough — we need a lighter variant
+// for icons and text sitting on top of the "main" background.
+
+export type AccentColors = {
+  main: string;
+  light: string;
+};
+
+export const accentsFull: Record<AccentName, AccentColors> = {
+  emerald: { main: colors.emerald, light: '#34d399' },
+  purple: { main: colors.purple, light: '#c084fc' },
+  indigo: { main: colors.indigo, light: '#818cf8' },
+  amber: { main: colors.amber, light: '#fbbf24' },
+  blue: { main: colors.blue, light: '#60a5fa' },
+};
+
+export const getAccent = (name: AccentName = 'indigo'): AccentColors =>
+  accentsFull[name] ?? accentsFull.indigo;
