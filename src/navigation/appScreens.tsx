@@ -6,6 +6,7 @@ import FrontendProScreen from '../screens/apps/FrontendProScreen';
 import MacCleanerScreen from '../screens/apps/MacCleanerScreen';
 import MarkleScreen from '../screens/apps/MarkleScreen';
 import FullscreenSliderScreen from '../screens/apps/FullscreenSliderScreen';
+import PixelShrinkScreen from '../screens/apps/PixelShrinkScreen';
 
 export type AppScreenEntry = {
   screenName: string;
@@ -54,5 +55,10 @@ export const APP_SCREEN_REGISTRY: Record<string, AppScreenEntry> = {
     screenName: 'FullscreenSlider',
     title: 'Fullscreen Slider',
     component: FullscreenSliderScreen,
+  },
+  pixelshrink: {
+    screenName: 'PixelShrink',
+    title: 'PixelShrink',
+    component: PixelShrinkScreen,
   },
 };
