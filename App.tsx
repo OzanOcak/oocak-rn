@@ -7,6 +7,8 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import Header from './src/components/Header';
 import { colors } from './src/theme/colors';
 import { Providers } from './src/providers/Providers';
+import SignInScreen from './src/screens/auth/public/SignInScreen';
+import SignUpScreen from './src/screens/auth/public/SignUpScreen';
 
 const RootStack = createNativeStackNavigator();
 
@@ -32,6 +34,17 @@ export default function App() {
               name="Root"
               component={RootTabs}
               options={{ header: () => <Header /> }}
+            />
+            {/* Public auth screens (modals) */}
+            <RootStack.Screen
+              name="SignIn"
+              component={SignInScreen}
+              options={{ presentation: 'modal', title: 'Sign In' }}
+            />
+            <RootStack.Screen
+              name="SignUp"
+              component={SignUpScreen}
+              options={{ presentation: 'modal', title: 'Sign Up' }}
             />
             <RootStack.Screen
               name="Profile"

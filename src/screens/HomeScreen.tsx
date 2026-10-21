@@ -73,14 +73,14 @@ export default function HomeScreen() {
         </Pressable>
         {/* Login — primary, blue */}
         <Pressable
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('SignIn')}
           className="w-full mt-4 py-4 rounded-xl items-center mb-3"
           style={{ backgroundColor: colors.blue }}
         >
           <Text className="text-white font-semibold">Sign In</Text>
         </Pressable>
         <Pressable
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('SignUp')}
           className="mt-4"
         >
           <Text className="text-sm" style={{ color: colors.textMuted }}>
