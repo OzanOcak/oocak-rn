@@ -10,6 +10,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { colors } from '../../theme/colors';
+import { useNavigation } from '@react-navigation/native';
 
 const signupSchema = z.object({
   username: z.string().min(3, 'Username is required').max(50),
@@ -31,6 +32,7 @@ export default function SignUpForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const navigation = useNavigation<any>();
 
   const {
     control,
@@ -54,6 +56,10 @@ export default function SignUpForm() {
       setSuccessMessage(
         'Registration successful! Please check your email to verify your account.',
       );
+
+      setTimeout(() => {
+        navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRegistry' });
+      }, 1200);
     } catch (err: any) {
       setErrorMessage(err?.message ?? 'An error occurred. Please try again.');
     } finally {

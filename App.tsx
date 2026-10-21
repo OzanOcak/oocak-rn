@@ -10,6 +10,7 @@ import { Providers } from './src/providers/Providers';
 import SignInScreen from './src/screens/auth/public/SignInScreen';
 import SignUpScreen from './src/screens/auth/public/SignUpScreen';
 import ForgotPasswordScreen from './src/screens/auth/public/ForgotPasswordScreen';
+import PrivateAuthNavigator from './src/navigation/PrivateAuthNavigator';
 
 const RootStack = createNativeStackNavigator();
 
@@ -51,6 +52,11 @@ export default function App() {
               name="ForgotPassword"
               component={ForgotPasswordScreen}
               options={{ presentation: 'modal', title: 'Reset Password' }}
+            />
+            <RootStack.Screen
+              name="PrivateAuth"
+              component={PrivateAuthNavigator}
+              options={{ presentation: 'modal', headerShown: false }}
             />
             <RootStack.Screen
               name="Profile"

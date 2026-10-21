@@ -43,6 +43,10 @@ export default function PasswordRequestForm() {
       console.log('forgot password:', data.email);
       setIsSuccess(true);
       setMessage('Verification link sent to your email!');
+
+      setTimeout(() => {
+        navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRecovery' });
+      }, 1200);
     } catch (err: any) {
       setIsSuccess(false);
       setMessage(err?.message ?? 'Request failed');
