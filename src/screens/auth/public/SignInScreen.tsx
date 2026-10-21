@@ -3,9 +3,11 @@ import { ScrollView, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LoginForm from '../../../components/auth/LoginForm';
 import { colors } from '../../../theme/colors';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
 
   return (
     <ScrollView
@@ -34,7 +36,7 @@ export default function SignInScreen() {
       >
         <Text
           onPress={() => {
-            // TODO: navigation.navigate('ForgotPassword')
+            navigation.navigate('ForgotPassword');
           }}
           style={{ color: '#3b82f6' }}
         >

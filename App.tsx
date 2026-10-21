@@ -9,6 +9,7 @@ import { colors } from './src/theme/colors';
 import { Providers } from './src/providers/Providers';
 import SignInScreen from './src/screens/auth/public/SignInScreen';
 import SignUpScreen from './src/screens/auth/public/SignUpScreen';
+import ForgotPasswordScreen from './src/screens/auth/public/ForgotPasswordScreen';
 
 const RootStack = createNativeStackNavigator();
 
@@ -45,6 +46,11 @@ export default function App() {
               name="SignUp"
               component={SignUpScreen}
               options={{ presentation: 'modal', title: 'Sign Up' }}
+            />
+            <RootStack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+              options={{ presentation: 'modal', title: 'Reset Password' }}
             />
             <RootStack.Screen
               name="Profile"
