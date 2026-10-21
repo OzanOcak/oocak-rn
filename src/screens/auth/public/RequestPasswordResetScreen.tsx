@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PasswordRequestForm from '../../../components/auth/PasswordRequestForm';
 import { colors } from '../../../theme/colors';
 
-export default function ForgotPasswordScreen() {
+export default function RequestPasswordResetScreen() {
   const insets = useSafeAreaInsets();
 
   return (

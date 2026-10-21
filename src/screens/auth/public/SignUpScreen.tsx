@@ -34,7 +34,7 @@ export default function SignUpScreen() {
       >
         Already have an account?{' '}
         <Text
-          onPress={() => navigation.navigate('SignIn')}
+          onPress={() => navigation.replace('SignIn')}
           style={{ color: '#3b82f6', textDecorationLine: 'underline' }}
         >
           Login

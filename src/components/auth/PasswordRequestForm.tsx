@@ -132,7 +132,7 @@ export default function PasswordRequestForm() {
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate('SignIn')}
+          onPress={() => navigation.replace('SignIn')}
           className="w-full py-2 rounded-md items-center"
           style={{ backgroundColor: '#16a34a' }}
         >

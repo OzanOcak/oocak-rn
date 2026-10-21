@@ -36,7 +36,7 @@ export default function SignInScreen() {
       >
         <Text
           onPress={() => {
-            navigation.navigate('ForgotPassword');
+            navigation.replace('RequestPasswordReset');
           }}
           style={{ color: '#3b82f6' }}
         >

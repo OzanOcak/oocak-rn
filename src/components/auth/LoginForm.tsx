@@ -147,7 +147,7 @@ export default function LoginForm() {
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate('SignUp')}
+          onPress={() => navigation.replace('SignUp')}
           className="w-full py-2 rounded-md items-center"
           style={{ backgroundColor: '#16a34a' }}
         >
