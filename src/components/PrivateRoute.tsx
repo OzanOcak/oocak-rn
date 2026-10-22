@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { hasAccess } from '../lib/auth/token';
 import { colors } from '../theme/colors';
+import { useStore } from '../stores/useStore';
 
 type Props = {
   children: React.ReactNode;
@@ -14,7 +14,9 @@ export default function PrivateRoute({
   redirectTo = 'SignIn',
 }: Props) {
   const navigation = useNavigation<any>();
-  const authed = hasAccess();
+  const accessToken = useStore(s => s.accessToken);
+  // !! converts the value to boolean
+  const authed = !!accessToken;
 
   useEffect(() => {
     if (!authed) {

@@ -1,14 +1,18 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Layers, BookOpen } from 'lucide-react-native';
+import { Home, Layers, BookOpen, User } from 'lucide-react-native';
 import HomeScreen from '../screens/HomeScreen';
 import AppsStack from './AppsStack';
 import BlogStack from './BlogStack';
 import { colors } from '../theme/colors';
+import { useStore } from '../stores/useStore';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
 export default function RootTabs() {
+  const accessToken = useStore(s => s.accessToken);
+  const isSignedIn = !!accessToken;
   return (
     <Tab.Navigator
       screenOptions={{
@@ -47,6 +51,16 @@ export default function RootTabs() {
           ),
         }}
       />
+      {isSignedIn && (
+        <Tab.Screen
+          name="ProfileTab"
+          component={ProfileScreen}
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 }

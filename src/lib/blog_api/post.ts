@@ -1,4 +1,4 @@
-import { http } from '../http/client';
+import { http } from '../http/nextApiClient';
 
 export type PostDetail = {
   slug: string;

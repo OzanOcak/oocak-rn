@@ -11,6 +11,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { colors } from '../../theme/colors';
+import { useLogin } from '../../hooks/useLogin';
 
 const loginSchema = z.object({
   email: z
@@ -26,7 +27,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 export default function LoginForm() {
   const navigation = useNavigation<any>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPending, setIsPending] = useState(false);
+  const loginMutation = useLogin(setErrorMessage);
 
   const {
     control,
@@ -39,18 +40,7 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormInputs) => {
     setErrorMessage(null);
-    setIsPending(true);
-
-    try {
-      // TODO: replace with real login mutation
-      await new Promise<void>(r => setTimeout(r, 1000));
-      console.log('login:', data);
-      navigation.goBack();
-    } catch (err: any) {
-      setErrorMessage(err?.message ?? 'Sign in failed');
-    } finally {
-      setIsPending(false);
-    }
+    loginMutation.mutate({ email: data.email, password: data.password });
   };
 
   return (
@@ -89,7 +79,7 @@ export default function LoginForm() {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
-              editable={!isPending}
+              editable={!loginMutation.isPending}
             />
           )}
         />
@@ -121,7 +111,7 @@ export default function LoginForm() {
               onChangeText={onChange}
               onBlur={onBlur}
               secureTextEntry
-              editable={!isPending}
+              editable={!loginMutation.isPending}
             />
           )}
         />
@@ -135,11 +125,13 @@ export default function LoginForm() {
       <View className="gap-4 mt-2">
         <Pressable
           onPress={() => handleSubmit(onSubmit)()}
-          disabled={isPending}
+          disabled={loginMutation.isPending}
           className="w-full py-2 rounded-md items-center"
-          style={{ backgroundColor: isPending ? '#1e40af' : '#2563eb' }}
+          style={{
+            backgroundColor: loginMutation.isPending ? '#1e40af' : '#2563eb',
+          }}
         >
-          {isPending ? (
+          {loginMutation.isPending ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text className="text-white font-semibold">Sign in</Text>
