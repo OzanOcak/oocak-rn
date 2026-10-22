@@ -11,6 +11,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { colors } from '../../theme/colors';
+import { useForgotPassword } from '../../hooks/auth/useForgotPassword';
 
 const emailSchema = z.object({
   email: z.string().email('Invalid email address').min(1, 'Email is required'),
@@ -22,7 +23,7 @@ export default function PasswordRequestForm() {
   const navigation = useNavigation<any>();
   const [message, setMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const forgotPasswordMutation = useForgotPassword();
 
   const {
     control,
@@ -33,26 +34,26 @@ export default function PasswordRequestForm() {
     defaultValues: { email: '' },
   });
 
-  const onSubmit = async (data: EmailFormInputs) => {
+  const onSubmit = (data: EmailFormInputs) => {
     setMessage(null);
-    setIsPending(true);
 
-    try {
-      // TODO: replace with real forgot-password mutation
-      await new Promise<void>(r => setTimeout(r, 1000));
-      console.log('forgot password:', data.email);
-      setIsSuccess(true);
-      setMessage('Verification link sent to your email!');
-
-      setTimeout(() => {
-        navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRecovery' });
-      }, 1200);
-    } catch (err: any) {
-      setIsSuccess(false);
-      setMessage(err?.message ?? 'Request failed');
-    } finally {
-      setIsPending(false);
-    }
+    forgotPasswordMutation.mutate(
+      { email: data.email },
+      {
+        onSuccess: () => {
+          setIsSuccess(true);
+          setMessage('Verification link sent to your email!');
+        },
+        onError: (error: any) => {
+          setIsSuccess(false);
+          setMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              'Request failed',
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -99,7 +100,7 @@ export default function PasswordRequestForm() {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
-              editable={!isPending}
+              editable={!forgotPasswordMutation.isPending}
             />
           )}
         />
@@ -118,11 +119,15 @@ export default function PasswordRequestForm() {
       <View className="gap-4 mt-2">
         <Pressable
           onPress={() => handleSubmit(onSubmit)()}
-          disabled={isPending}
+          disabled={forgotPasswordMutation.isPending}
           className="w-full py-2 rounded-md items-center"
-          style={{ backgroundColor: isPending ? '#1e40af' : '#2563eb' }}
+          style={{
+            backgroundColor: forgotPasswordMutation.isPending
+              ? '#1e40af'
+              : '#2563eb',
+          }}
         >
-          {isPending ? (
+          {forgotPasswordMutation.isPending ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text className="text-white font-semibold">
