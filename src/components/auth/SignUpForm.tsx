@@ -10,7 +10,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { colors } from '../../theme/colors';
-import { useNavigation } from '@react-navigation/native';
+import { useSignup } from '../../hooks/auth/useSignup';
 
 const signupSchema = z.object({
   username: z.string().min(3, 'Username is required').max(50),
@@ -30,9 +30,7 @@ type SignupFormInputs = z.infer<typeof signupSchema>;
 
 export default function SignUpForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isPending, setIsPending] = useState(false);
-  const navigation = useNavigation<any>();
+  const signupMutation = useSignup(setErrorMessage);
 
   const {
     control,
@@ -44,27 +42,13 @@ export default function SignUpForm() {
     defaultValues: { username: '', email: '', password: '' },
   });
 
-  const onSubmit = async (data: SignupFormInputs) => {
+  const onSubmit = (data: SignupFormInputs) => {
     setErrorMessage(null);
-    setSuccessMessage(null);
-    setIsPending(true);
-
-    try {
-      // TODO: replace with real signup mutation
-      await new Promise<void>(r => setTimeout(r, 1000));
-      console.log('signup:', data);
-      setSuccessMessage(
-        'Registration successful! Please check your email to verify your account.',
-      );
-
-      setTimeout(() => {
-        navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRegistry' });
-      }, 1200);
-    } catch (err: any) {
-      setErrorMessage(err?.message ?? 'An error occurred. Please try again.');
-    } finally {
-      setIsPending(false);
-    }
+    signupMutation.mutate({
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    });
   };
 
   return (
@@ -76,17 +60,6 @@ export default function SignUpForm() {
         >
           <Text className="text-sm" style={{ color: '#fca5a5' }}>
             {errorMessage}
-          </Text>
-        </View>
-      ) : null}
-
-      {successMessage ? (
-        <View
-          className="px-4 py-3 rounded-md mb-4 border"
-          style={{ backgroundColor: '#064e3b22', borderColor: '#22c55e' }}
-        >
-          <Text className="text-sm" style={{ color: '#6ee7b7' }}>
-            {successMessage}
           </Text>
         </View>
       ) : null}
@@ -113,7 +86,7 @@ export default function SignUpForm() {
               onBlur={onBlur}
               autoCapitalize="none"
               autoCorrect={false}
-              editable={!isPending}
+              editable={!signupMutation.isPending}
             />
           )}
         />
@@ -151,7 +124,7 @@ export default function SignUpForm() {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
-              editable={!isPending}
+              editable={!signupMutation.isPending}
             />
           )}
         />
@@ -187,7 +160,7 @@ export default function SignUpForm() {
               onChangeText={onChange}
               onBlur={onBlur}
               secureTextEntry
-              editable={!isPending}
+              editable={!signupMutation.isPending}
             />
           )}
         />
@@ -204,11 +177,13 @@ export default function SignUpForm() {
 
       <Pressable
         onPress={() => handleSubmit(onSubmit)()}
-        disabled={isPending}
+        disabled={signupMutation.isPending}
         className="w-full py-2 rounded-md items-center mt-2"
-        style={{ backgroundColor: isPending ? '#1e40af' : '#2563eb' }}
+        style={{
+          backgroundColor: signupMutation.isPending ? '#1e40af' : '#2563eb',
+        }}
       >
-        {isPending ? (
+        {signupMutation.isPending ? (
           <ActivityIndicator color="#fff" />
         ) : (
           <Text className="text-white font-semibold">Signup</Text>
