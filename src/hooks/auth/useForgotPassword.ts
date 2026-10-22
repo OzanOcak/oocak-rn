@@ -38,7 +38,7 @@ export const useForgotPassword = () => {
   return useMutation({
     mutationFn: forgotPassword,
     onSuccess: data => {
-      useStore.getState().setToken(data.token);
+      useStore.getState().setOtpToken(data.token);
       navigation.replace('PrivateAuth', { screen: 'VerifyOtpRecovery' });
     },
     onError: (error: Error) => {

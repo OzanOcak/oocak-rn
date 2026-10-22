@@ -1,10 +1,10 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import VerifyOtpRecoveryScreen from '../screens/auth/private/VerifyOtpRecoveryScreen';
-import UpdatePasswordScreen from '../screens/auth/private/UpdatePasswordScreen';
 import VerifyOtpRegistryScreen from '../screens/auth/private/VerifyOtpRegistryScreen';
 import PrivateRoute from '../components/PrivateRoute';
 import { colors } from '../theme/colors';
+import UpdatePasswordScreen from '../screens/auth/private/UpdatePasswordScreen';
 
 const Stack = createNativeStackNavigator();
 

@@ -14,9 +14,9 @@ export default function PrivateRoute({
   redirectTo = 'SignIn',
 }: Props) {
   const navigation = useNavigation<any>();
-  const accessToken = useStore(s => s.accessToken);
+  const otpToken = useStore(s => s.otpToken);
   // !! converts the value to boolean
-  const authed = !!accessToken;
+  const authed = !!otpToken;
 
   useEffect(() => {
     if (!authed) {

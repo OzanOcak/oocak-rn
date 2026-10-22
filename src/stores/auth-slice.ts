@@ -3,9 +3,11 @@ import { Store } from './useStore';
 export type AuthSlice = {
   accessToken: string;
   refreshTokenId: string;
+  otpToken: string;
   setToken: (accessToken: string) => void;
   clearToken: () => void;
   setRefreshTokenId: (refreshTokenId: string) => void;
+  setOtpToken: (otpToken: string) => void;
 };
 
 export const createAuthSlice = (
@@ -13,6 +15,7 @@ export const createAuthSlice = (
 ): AuthSlice => ({
   accessToken: '',
   refreshTokenId: '',
+  otpToken: '',
 
   setToken: (accessToken: string) => {
     set(state => {
@@ -20,16 +23,23 @@ export const createAuthSlice = (
     });
   },
 
+  setRefreshTokenId: (refreshTokenId: string) => {
+    set(state => {
+      state.refreshTokenId = refreshTokenId;
+    });
+  },
+
+  setOtpToken: (otpToken: string) => {
+    set(state => {
+      state.otpToken = otpToken;
+    });
+  },
+
   clearToken: () => {
     set(state => {
       state.accessToken = '';
       state.refreshTokenId = '';
-    });
-  },
-
-  setRefreshTokenId: (refreshTokenId: string) => {
-    set(state => {
-      state.refreshTokenId = refreshTokenId;
+      state.otpToken = '';
     });
   },
 });

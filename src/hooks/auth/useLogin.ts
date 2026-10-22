@@ -53,7 +53,7 @@ export const useLogin = (
       // Web: router.push(redirectUser(role))
       // RN: for now, just close the modal
       navigation.goBack();
-      setTimeout(() => navigation.navigate('Profile'), 100);
+      //setTimeout(() => navigation.navigate('Profile'), 100);
     },
     onError: (error: Error) => {
       console.error('Login failed:', error.message);

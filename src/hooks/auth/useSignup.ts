@@ -40,7 +40,7 @@ export const useSignup = (setErrorMessage?: (msg: string | null) => void) => {
       console.log('User registered successfully!');
       // Web: localStorage.setItem('xg8a', data.token) → RN: Zustand
       if (data.token) {
-        useStore.getState().setToken(data.token);
+        useStore.getState().setOtpToken(data.token);
       }
       // Web: router.push('/verify-otp-registration') → RN: PrivateAuth nested screen
       navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRegistry' });
