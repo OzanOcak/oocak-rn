@@ -1,10 +1,18 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Cpu, ShieldCheck } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import { findApp } from '../data/apps';
 import FeatureCard from '../components/FeatureCard';
+import { useStore } from '../stores/useStore';
+import { useLogout } from '../hooks/auth/useLogout';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -13,6 +21,10 @@ export default function HomeScreen() {
   const smartWords = findApp('smartwords')!;
   const frontendPro = findApp('frontendpro')!;
   const authflow = findApp('authflow')!;
+
+  const accessToken = useStore(s => s.accessToken);
+  const isSignedIn = !!accessToken;
+  const logoutMutation = useLogout();
 
   return (
     <ScrollView
@@ -73,11 +85,20 @@ export default function HomeScreen() {
         </Pressable>
         {/* Login — primary, blue */}
         <Pressable
-          onPress={() => navigation.navigate('SignIn')}
+          onPress={() =>
+            isSignedIn ? logoutMutation.mutate() : navigation.navigate('SignIn')
+          }
+          disabled={logoutMutation.isPending}
           className="w-full mt-4 py-4 rounded-xl items-center mb-3"
-          style={{ backgroundColor: colors.blue }}
+          style={{ backgroundColor: isSignedIn ? '#ef4444' : colors.blue }}
         >
-          <Text className="text-white font-semibold">Sign In</Text>
+          {logoutMutation.isPending ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text className="text-white font-semibold">
+              {isSignedIn ? 'Sign Out' : 'Sign In'}
+            </Text>
+          )}
         </Pressable>
         <Pressable
           onPress={() => navigation.navigate('SignUp')}

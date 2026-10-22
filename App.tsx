@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RootTabs from './src/navigation/RootTabs';
+import ProfileScreen from './src/screens/ProfileScreen';
 import Header from './src/components/Header';
 import { colors } from './src/theme/colors';
 import { Providers } from './src/providers/Providers';
@@ -56,6 +57,11 @@ export default function App() {
               name="PrivateAuth"
               component={PrivateAuthNavigator}
               options={{ presentation: 'modal', headerShown: false }}
+            />
+            <RootStack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: 'Profile' }}
             />
           </RootStack.Navigator>
         </NavigationContainer>

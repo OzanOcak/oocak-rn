@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
-import axiosInstance from '../lib/http/nodeAuthClient';
-import { useStore } from '../stores/useStore';
+import axiosInstance from '../../lib/http/nodeAuthClient';
+import { useStore } from '../../stores/useStore';
 
 type LoginData = {
   email: string;
