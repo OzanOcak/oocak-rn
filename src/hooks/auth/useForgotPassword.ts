@@ -39,7 +39,7 @@ export const useForgotPassword = () => {
     mutationFn: forgotPassword,
     onSuccess: data => {
       useStore.getState().setToken(data.token);
-      navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRecovery' });
+      navigation.replace('PrivateAuth', { screen: 'VerifyOtpRecovery' });
     },
     onError: (error: Error) => {
       console.error('Forgot password error:', error.message);

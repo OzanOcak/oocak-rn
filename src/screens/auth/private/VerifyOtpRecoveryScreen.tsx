@@ -144,7 +144,7 @@ export default function VerifyOtpRecoveryScreen() {
       {countdownFinished ? (
         <>
           <Pressable
-            onPress={() => navigation.navigate('ForgotPassword')}
+            onPress={() => navigation.replace('ForgotPassword')}
             className="py-2 rounded-lg items-center"
             style={{ backgroundColor: '#2563eb' }}
           >
