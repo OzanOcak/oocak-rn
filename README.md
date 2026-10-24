@@ -1,97 +1,175 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# oocakrn
 
-# Getting Started
+A React Native CLI application built with TypeScript, focused on native mobile development, API integration, and secure authentication.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Overview
 
-## Step 1: Start Metro
+`oocakrn` is a native React Native project designed to bring authentication and API functionality into a dedicated mobile application rather than relying on a WebView.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+The project explores mobile-specific authentication, secure credential storage, token lifecycle management, and integration with a backend API.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Tech Stack
 
-```sh
-# Using npm
+- **React Native CLI** — Native iOS and Android application
+- **TypeScript** — Type-safe application development
+- **Axios** — HTTP requests and API interceptors
+- **Zustand** — Client-side authentication state
+- **React Native Keychain** — Secure refresh-token storage
+- **OAuth 2.0** — Google authentication flow
+- **PKCE** — Protection for the OAuth authorization-code flow
+- **Deep Linking** — Return from browser-based authentication to the mobile app
+- **JWT** — Access-token authentication
+- **REST API** — Backend communication
+
+## Authentication Architecture
+
+### Email and Password
+
+The application integrates with the backend's email/password authentication endpoints for account registration and login.
+
+### Google OAuth 2.0
+
+The mobile OAuth flow is designed around the authorization-code flow with PKCE.
+
+1. Generate a code verifier and code challenge.
+2. Request an authorization URL from the backend.
+3. Open the Google authorization page.
+4. Receive the backend callback through a mobile deep link.
+5. Exchange the one-time application authorization code and verifier with the backend.
+6. Receive application authentication credentials.
+
+The backend handles Google authorization-code exchange and application-user resolution.
+
+### Token Management
+
+The mobile API client uses Axios interceptors to attach access tokens and handle authentication failures.
+
+- **Access token:** Kept in Zustand application state and attached to protected API requests.
+- **Refresh token:** Stored securely using React Native Keychain.
+- **Refresh-token ID:** Maintained in application state and sent to the backend during token refresh.
+- **Automatic refresh:** On eligible `401 Unauthorized` responses, the interceptor attempts to refresh credentials and retry the original request.
+- **Credential cleanup:** Authentication state is cleared when refresh fails or credentials are unavailable.
+
+The refresh flow depends on successful backend validation and token rotation. End-to-end behavior should be verified on the target mobile platforms.
+
+## Project Structure
+
+The exact structure may evolve as development continues.
+
+```text
+oocakrn/
+├── src/
+│   ├── api/              # API clients and interceptors
+│   ├── stores/           # Zustand state management
+│   ├── components/       # Reusable UI components
+│   ├── screens/          # Application screens
+│   ├── navigation/       # Navigation and deep-link handling
+│   └── ...
+├── android/              # Native Android project
+├── ios/                  # Native iOS project
+├── App.tsx
+├── package.json
+└── README.md
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js and npm
+- React Native CLI development environment
+- Android Studio and Android SDK for Android development
+- Xcode and CocoaPods for iOS development on macOS
+- A running backend API with the required authentication endpoints configured
+
+### Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/OzanOcak/oocakrn.git
+cd oocakrn
+npm install
+```
+
+For iOS, install CocoaPods dependencies if required by the project:
+
+```bash
+cd ios
+pod install
+cd ..
+```
+
+### Run the Application
+
+Start Metro:
+
+```bash
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+Run on Android:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+```bash
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+Run on iOS:
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+```bash
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Use the scripts defined in `package.json` if they differ from these commands.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## Backend Configuration
 
-## Step 3: Modify your app
+The application communicates with a backend API. In development, the API base URL must point to an address reachable from the emulator or physical device.
 
-Now that you have successfully run the app, let's make changes!
+The current Axios configuration uses:
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+- Development: `http://localhost:3000/api`
+- Production: `https://api.oocak.com/api`
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+**Important:** `localhost` refers to the device or emulator itself. Android emulators and physical devices may require a different development host address.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+Configure the backend's Google OAuth credentials, mobile callback URL, deep-link scheme, and application endpoints in the backend environment. Never commit client secrets, signing keys, or environment files containing credentials.
 
-## Congratulations! :tada:
+## Security Considerations
 
-You've successfully run and modified your React Native App. :partying_face:
+- Keep refresh tokens in secure native storage rather than ordinary application storage.
+- Avoid logging access tokens, refresh tokens, authorization codes, or sensitive authentication responses.
+- Validate OAuth `state` and PKCE values on the backend.
+- Use HTTPS in production.
+- Ensure refresh-token rotation invalidates previously used credentials.
+- Use persistent, appropriately shared storage for pending OAuth state and authorization codes if deploying multiple backend instances.
+- Configure production deep links and OAuth redirect URIs explicitly.
 
-### Now what?
+## Current Development Status
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+The project includes the mobile authentication architecture and API-client token-refresh implementation.
 
-# Troubleshooting
+| Feature | Status |
+|---|---|
+| Email/password authentication integration | Implemented |
+| Axios API client and access-token attachment | Implemented |
+| Zustand authentication state | Implemented |
+| Secure refresh-token storage | Implemented |
+| Google OAuth mobile flow with PKCE | In development / integration verification required |
+| Deep-link callback and authorization-code exchange | Integration verification required |
+| Automatic refresh and request retry | Implemented; end-to-end verification pending |
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Goals
 
-# Learn More
+- Complete and validate Google OAuth on iOS and Android.
+- Verify access-token expiration and refresh-token rotation.
+- Expand native mobile integrations using Swift and Kotlin where appropriate.
+- Improve automated testing, error handling, and authentication reliability.
 
-To learn more about React Native, take a look at the following resources:
+## Author
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+**Ozan Ocak**
+
+- Website: https://oocak.com
+- GitHub: https://github.com/OzanOcak
+
