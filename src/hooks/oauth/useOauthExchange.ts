@@ -33,7 +33,7 @@ export const useOauthExchange = (
       await Keychain.setGenericPassword('refresh', data.refreshToken);
       await AsyncStorage.removeItem('pkce_verifier');
 
-      navigation.replace('HomeTab');
+      navigation.replace('Root', { screen: 'HomeTab' });
     },
     onError: (error: any) => {
       console.error('OAuth exchange failed:', error);

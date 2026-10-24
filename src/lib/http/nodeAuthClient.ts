@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { useStore } from '../../stores/useStore';
 import * as Keychain from 'react-native-keychain';
+import Config from 'react-native-config';
 
 const axiosInstance = axios.create({
-  baseURL: __DEV__ ? 'http://localhost:3000/api' : 'https://api.oocak.com/api',
+  baseURL: __DEV__ ? 'http://localhost:3000/api' : Config.API_URL,
+  //baseURL: 'https://api.oocak.com/api',
   // ❌ withCredentials removed — cookies don't work in RN
   headers: {
     'Content-Type': 'application/json',
