@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LoginForm from '../../../components/auth/LoginForm';
 import { colors } from '../../../theme/colors';
 import { useNavigation } from '@react-navigation/native';
+import { GoogleSignInButton } from '../../../components/oauth/GoogleSignInButton';
 
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
@@ -43,6 +44,14 @@ export default function SignInScreen() {
           Forgot your password?
         </Text>
       </Text>
+      <Text
+        className="text-xs font-mono uppercase text-center mt-6 mb-4"
+        style={{ color: colors.textDim }}
+      >
+        Or continue with
+      </Text>
+
+      <GoogleSignInButton />
     </ScrollView>
   );
 }

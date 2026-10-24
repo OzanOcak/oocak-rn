@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useStore } from '../../stores/useStore';
+import * as Keychain from 'react-native-keychain';
 
 const axiosInstance = axios.create({
   baseURL: __DEV__ ? 'http://localhost:3000/api' : 'https://api.oocak.com/api',
@@ -29,45 +30,63 @@ axiosInstance.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
+    const url = originalRequest?.url ?? '';
 
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      // Ignore 401 from /login — let the login error surface
-      if (originalRequest.url.includes('/login')) {
-        return Promise.reject(error);
-      }
+    // Skip auth-flow routes — they handle their own errors
+    if (
+      url.includes('/login') ||
+      url.includes('/signup') ||
+      url.includes('/refresh') ||
+      url.includes('/oauth-mobile') ||
+      url.includes('/verify-otp') ||
+      url.includes('/verify-email') ||
+      url.includes('/forgot-password')
+    ) {
+      return Promise.reject(error);
+    }
+
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
       console.warn('* 401 interceptor...', error);
 
       try {
         const refreshTokenId = useStore.getState().refreshTokenId;
+        const credentials = await Keychain.getGenericPassword();
+
+        if (!credentials) {
+          useStore.getState().clearToken();
+          return Promise.reject(error);
+        }
 
         const refreshResponse = await axiosInstance.post(
-          '/refresh',
-          {},
+          '/oauth-mobile/refresh',
           {
-            headers: {
-              'refresh-token-id': refreshTokenId,
-            },
+            refreshToken: credentials.password,
+            refreshTokenId,
           },
         );
 
-        const newAccessToken =
-          refreshResponse.headers['authorization']?.split(' ')[1];
+        const {
+          accessToken,
+          refreshToken,
+          refreshTokenId: newId,
+        } = refreshResponse.data;
 
-        if (newAccessToken) {
-          useStore.getState().setToken(newAccessToken);
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        useStore.getState().setToken(accessToken);
+        useStore.getState().setRefreshTokenId(newId);
+        await Keychain.setGenericPassword('refresh', refreshToken);
 
-          const newRefreshTokenId = refreshResponse.data?.refreshTokenId;
-          if (newRefreshTokenId) {
-            useStore.getState().setRefreshTokenId(newRefreshTokenId);
-          }
-
-          // Retry the original request with the new token
-          return axiosInstance(originalRequest);
-        }
+        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+        return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error('Failed to refresh access token:', refreshError);
+        useStore.getState().clearToken();
+        return Promise.reject(error);
       }
     }
 
