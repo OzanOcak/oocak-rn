@@ -12,7 +12,7 @@ export const useGoogleSignInUrl = (enabled: boolean) => {
 
       await AsyncStorage.setItem('pkce_verifier', verifier);
 
-      const response = await axiosInstance.get('/oauth-mobile/url', {
+      const response = await axiosInstance.get('/mobile/oauth/url', {
         params: { code_challenge: challenge },
       });
 

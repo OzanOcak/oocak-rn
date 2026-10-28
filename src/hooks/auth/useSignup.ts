@@ -46,11 +46,12 @@ export const useSignup = (setErrorMessage?: (msg: string | null) => void) => {
       navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRegistry' });
     },
     onError: (error: any) => {
-      // console.error('Registration error:', error.message);
-      // console.error('Backend said:', error.response?.data);
-      // console.error('Status:', error.response?.status);
-      console.error('Registration error:', error.message);
-      setErrorMessage?.(error.message || 'Registration failed');
+      const backendMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Registration failed';
+      console.error('Registration error:', backendMessage);
+      setErrorMessage?.(backendMessage);
     },
   });
 };

@@ -11,7 +11,7 @@ const exchangeOauthCode = async (data: OauthExchangeData) => {
   const verifier = await AsyncStorage.getItem('pkce_verifier');
   if (!verifier) throw new Error('PKCE verifier not found');
 
-  const response = await axiosInstance.post('/oauth-mobile/exchange', {
+  const response = await axiosInstance.post('/mobile/oauth/exchange', {
     code: data.code,
     code_verifier: verifier,
   });

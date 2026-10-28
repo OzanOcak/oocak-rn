@@ -5,8 +5,7 @@ import Config from 'react-native-config';
 
 const axiosInstance = axios.create({
   baseURL: __DEV__ ? 'http://localhost:3000/api' : Config.API_URL,
-  //baseURL: 'https://api.oocak.com/api',
-  // ❌ withCredentials removed — cookies don't work in RN
+  // withCredentials removed — cookies don't work in RN
   headers: {
     'Content-Type': 'application/json',
   },
@@ -39,7 +38,8 @@ axiosInstance.interceptors.response.use(
       url.includes('/login') ||
       url.includes('/signup') ||
       url.includes('/refresh') ||
-      url.includes('/oauth-mobile') ||
+      url.includes('/mobile/oauth') ||
+      url.includes('/mobile/auth') ||
       url.includes('/verify-otp') ||
       url.includes('/verify-email') ||
       url.includes('/forgot-password')
@@ -66,7 +66,7 @@ axiosInstance.interceptors.response.use(
         }
 
         const refreshResponse = await axiosInstance.post(
-          '/oauth-mobile/refresh',
+          '/mobile/oauth/refresh',
           {
             refreshToken: credentials.password,
             refreshTokenId,

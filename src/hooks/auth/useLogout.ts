@@ -1,7 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { useStore } from '../../stores/useStore';
-import axiosInstance from '../../lib/http/nodeAuthClient';
+
+// Raw axios — no interceptors. Logout must never trigger a refresh.
+const rawAxios = axios.create({
+  baseURL: __DEV__ ? 'http://localhost:3000/api' : 'https://api.oocak.com/api',
+  headers: { 'Content-Type': 'application/json' },
+});
 
 const logoutUser = async (): Promise<void> => {
   const refreshTokenId = useStore.getState().refreshTokenId;
@@ -9,36 +17,26 @@ const logoutUser = async (): Promise<void> => {
   if (!refreshTokenId) return;
 
   try {
-    await axiosInstance.post(
-      '/logout',
-      {},
-      {
-        headers: {
-          'refresh-token-id': refreshTokenId,
-        },
-      },
-    );
+    await rawAxios.post('/mobile/auth/logout', { refreshTokenId });
   } catch (error) {
-    console.error('Logout failed:', error);
+    console.warn('Backend logout failed (ignoring):', error);
   }
 };
 
 export const useLogout = () => {
   const navigation = useNavigation<any>();
-  const clearToken = useStore(state => state.clearToken);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: logoutUser,
     mutationKey: ['logout'],
-    onSettled: () => {
-      clearToken();
+    onSettled: async () => {
+      await Keychain.resetGenericPassword();
+      await AsyncStorage.removeItem('pkce_verifier');
+      useStore.getState().clearToken();
       useStore.persist.clearStorage();
       queryClient.removeQueries({ queryKey: ['user'] });
-      navigation.navigate('HomeTab');
-    },
-    onError: (error: Error) => {
-      console.error('Logout failed:', error.message);
+      navigation.reset({ index: 0, routes: [{ name: 'HomeTab' }] });
     },
   });
 };

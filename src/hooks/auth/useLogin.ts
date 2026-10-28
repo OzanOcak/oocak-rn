@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
 import axiosInstance from '../../lib/http/nodeAuthClient';
 import { useStore } from '../../stores/useStore';
 
@@ -8,40 +9,21 @@ type LoginData = {
   password: string;
 };
 
-// Function to handle user login
 const loginUser = async (data: LoginData): Promise<void> => {
-  const response = await axiosInstance.post('/login', data);
+  const response = await axiosInstance.post('/mobile/auth/login', data);
 
-  if (response.status !== 200) {
-    throw new Error(response.data?.message || 'Login failed');
-  }
+  const { accessToken, refreshToken, refreshTokenId } = response.data;
 
-  const authorizationHeader =
-    response.headers['authorization'] || response.headers['Authorization'];
-  const accessToken = authorizationHeader?.split(' ')[1];
+  if (!accessToken) throw new Error('Access token not received');
+  if (!refreshTokenId) throw new Error('Refresh token ID not received');
+  if (!refreshToken) throw new Error('Refresh token not received');
 
-  if (accessToken) {
-    useStore.getState().setToken(accessToken);
-  } else {
-    throw new Error('Access token not received');
-  }
+  useStore.getState().setToken(accessToken);
+  useStore.getState().setRefreshTokenId(refreshTokenId);
 
-  const refreshTokenId =
-    response.headers['refresh-token-id'] ||
-    response.headers['Refresh-Token-ID'];
-
-  if (refreshTokenId) {
-    try {
-      useStore.getState().setRefreshTokenId(refreshTokenId);
-    } catch (error) {
-      console.error('Error storing refresh token ID:', error);
-    }
-  } else {
-    throw new Error('Refresh token ID not received');
-  }
+  await Keychain.setGenericPassword('refresh', refreshToken);
 };
 
-// Custom hook for login
 export const useLogin = (
   setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
 ) => {
@@ -50,10 +32,7 @@ export const useLogin = (
   return useMutation({
     mutationFn: loginUser,
     onSuccess: () => {
-      // Web: router.push(redirectUser(role))
-      // RN: for now, just close the modal
       navigation.goBack();
-      //setTimeout(() => navigation.navigate('Profile'), 100);
     },
     onError: (error: Error) => {
       console.error('Login failed:', error.message);
