@@ -4,10 +4,12 @@ import * as Keychain from 'react-native-keychain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useStore } from '../../stores/useStore';
+import Config from 'react-native-config';
+import { getDevHost } from '../../lib/http/getDevHost';
 
 // Raw axios — no interceptors. Logout must never trigger a refresh.
 const rawAxios = axios.create({
-  baseURL: __DEV__ ? 'http://localhost:3000/api' : 'https://api.oocak.com/api',
+  baseURL: __DEV__ ? `http://${getDevHost()}:3000/api` : Config.API_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 

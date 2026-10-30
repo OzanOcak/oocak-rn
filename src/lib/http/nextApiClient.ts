@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { Platform } from 'react-native';
+import { getDevHost } from './getDevHost';
+import Config from 'react-native-config';
 
 /**
  * Base URL for the API.
@@ -8,10 +9,8 @@ import { Platform } from 'react-native';
  * - Production build → live domain
  */
 export const API_BASE = __DEV__
-  ? Platform.OS === 'android'
-    ? 'http://10.0.2.2:5173'
-    : 'http://localhost:5173'
-  : 'https://oocak.com';
+  ? `http://${getDevHost()}:5173`
+  : Config.BASE_URL;
 
 /**
  * Custom error thrown by `http()`.
