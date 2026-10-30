@@ -18,6 +18,9 @@ export const useStore = create<Store>()(
       {
         name: 'store',
         storage: createJSONStorage(() => AsyncStorage),
+        partialize: state => ({
+          isFaceIdEnabled: state.isFaceIdEnabled,
+        }),
       },
     ),
   ),

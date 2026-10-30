@@ -33,7 +33,9 @@ export const useLogout = () => {
     mutationFn: logoutUser,
     mutationKey: ['logout'],
     onSettled: async () => {
-      await Keychain.resetGenericPassword();
+      // Delete ONLY the session token
+      await Keychain.resetGenericPassword({ service: 'session-tokens' });
+      //  await Keychain.resetGenericPassword();
       await AsyncStorage.removeItem('pkce_verifier');
       useStore.getState().clearToken();
       useStore.persist.clearStorage();

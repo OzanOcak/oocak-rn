@@ -20,5 +20,6 @@ export const useGoogleSignInUrl = (enabled: boolean) => {
     },
     enabled,
     retry: false,
+    staleTime: 0, //Forces a fresh fetch every time
   });
 };

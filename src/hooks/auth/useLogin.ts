@@ -21,7 +21,10 @@ const loginUser = async (data: LoginData): Promise<void> => {
   useStore.getState().setToken(accessToken);
   useStore.getState().setRefreshTokenId(refreshTokenId);
 
-  await Keychain.setGenericPassword('refresh', refreshToken);
+  // Save the refreshTokenId as the 'username' and the refreshToken as the 'password'
+  await Keychain.setGenericPassword(refreshTokenId, refreshToken, {
+    service: 'session-tokens',
+  });
 };
 
 export const useLogin = (

@@ -30,7 +30,13 @@ export const useOauthExchange = (
       useStore.getState().setToken(data.accessToken);
       useStore.getState().setRefreshTokenId(data.refreshTokenId);
 
-      await Keychain.setGenericPassword('refresh', data.refreshToken);
+      await Keychain.setGenericPassword(
+        data.refreshTokenId,
+        data.refreshToken,
+        {
+          service: 'session-tokens',
+        },
+      );
       await AsyncStorage.removeItem('pkce_verifier');
 
       navigation.replace('Root', { screen: 'HomeTab' });

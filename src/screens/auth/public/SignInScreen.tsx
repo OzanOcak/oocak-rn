@@ -5,6 +5,7 @@ import LoginForm from '../../../components/auth/LoginForm';
 import { colors } from '../../../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { GoogleSignInButton } from '../../../components/oauth/GoogleSignInButton';
+import { FaceIdSignInButton } from '../../../components/faceid/FaceIdSignInButton';
 
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
@@ -52,6 +53,9 @@ export default function SignInScreen() {
       </Text>
 
       <GoogleSignInButton />
+
+      {/* Face ID Button - It will hide itself automatically if not enabled in Zustand */}
+      <FaceIdSignInButton />
     </ScrollView>
   );
 }

@@ -59,7 +59,9 @@ axiosInstance.interceptors.response.use(
 
       try {
         const refreshTokenId = useStore.getState().refreshTokenId;
-        const credentials = await Keychain.getGenericPassword();
+        const credentials = await Keychain.getGenericPassword({
+          service: 'session-tokens',
+        });
 
         if (!credentials) {
           useStore.getState().clearToken();

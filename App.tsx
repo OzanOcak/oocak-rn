@@ -11,6 +11,8 @@ import SignInScreen from './src/screens/auth/public/SignInScreen';
 import SignUpScreen from './src/screens/auth/public/SignUpScreen';
 import PrivateAuthNavigator from './src/navigation/PrivateAuthNavigator';
 import RequestPasswordResetScreen from './src/screens/auth/public/RequestPasswordResetScreen';
+import { ActivityIndicator, View } from 'react-native';
+import { useSessionRestore } from './src/hooks/auth/useSessionRestore';
 
 const RootStack = createNativeStackNavigator();
 
@@ -26,7 +28,25 @@ const navTheme = {
   },
 };
 
-export default function App() {
+// Create an inner component for the Navigation
+function AppNavigator() {
+  const { isRestoring } = useSessionRestore();
+
+  if (isRestoring) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.bg,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.emerald} />
+      </View>
+    );
+  }
+
   return (
     <Providers>
       <SafeAreaProvider>
@@ -65,6 +85,17 @@ export default function App() {
             />
           </RootStack.Navigator>
         </NavigationContainer>
+      </SafeAreaProvider>
+    </Providers>
+  );
+}
+
+// 2. Keep your main App export clean
+export default function App() {
+  return (
+    <Providers>
+      <SafeAreaProvider>
+        <AppNavigator />
       </SafeAreaProvider>
     </Providers>
   );

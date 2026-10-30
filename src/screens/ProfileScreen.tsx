@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { colors } from '../theme/colors';
 import { useUserName } from '../hooks/roles/useUserName';
+import { EnableFaceIdButton } from '../components/faceid/EnableFaceIdButton';
 
 export default function ProfileScreen() {
   const { data: profile, isLoading, error } = useUserName();
@@ -89,6 +90,12 @@ export default function ProfileScreen() {
           {profile?.role ?? '—'}
         </Text>
       </View>
+      {/* Face ID Section */}
+      <Text className="text-lg font-bold mb-4" style={{ color: colors.text }}>
+        Security
+      </Text>
+
+      <EnableFaceIdButton />
     </ScrollView>
   );
 }

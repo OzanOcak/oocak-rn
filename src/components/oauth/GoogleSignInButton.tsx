@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, Text, ActivityIndicator, View } from 'react-native';
 import InAppBrowser from 'react-native-inappbrowser-reborn';
-import { useGoogleSignInUrl } from '../../hooks/oauth/useGoogleSignInUrl';
+import { useQueryClient } from '@tanstack/react-query'; // <--- ADD THIS
+import AsyncStorage from '@react-native-async-storage/async-storage'; // <--- ADD THIS
+import axiosInstance from '../../lib/http/nodeAuthClient'; // <--- ADD THIS
+import { generateCodeChallenge, generateCodeVerifier } from '../../lib/pkce'; // <--- ADD THIS
 import { useOauthExchange } from '../../hooks/oauth/useOauthExchange';
 import { colors } from '../../theme/colors';
 import { GoogleIcon } from './GoogleIcon';
@@ -10,28 +13,57 @@ export const GoogleSignInButton: React.FC = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [url, setUrl] = useState<string | null>(null); // <--- LOCAL STATE FOR URL
 
-  const browserOpening = useRef(false); //  synchronous lock against concurrent browser launches
+  const browserOpening = useRef(false);
+  const queryClient = useQueryClient(); // <--- GET QUERY CLIENT
 
-  const { data, error } = useGoogleSignInUrl(isClicked);
   const { mutate: exchangeCode } = useOauthExchange(setErrorMessage);
 
-  const url = data?.url; // CHANGED: extract URL for effect dependency
+  // FORCE A FRESH FETCH ON EVERY CLICK
+  const handleClick = async () => {
+    if (browserOpening.current || isDisabled) return;
 
+    setErrorMessage(null);
+    setIsClicked(true);
+    setIsDisabled(true);
+
+    try {
+      const data = await queryClient.fetchQuery({
+        queryKey: ['googleSignInUrl', Date.now()], // Date.now() bypasses cache
+        queryFn: async () => {
+          const verifier = generateCodeVerifier();
+          const challenge = generateCodeChallenge(verifier);
+          await AsyncStorage.setItem('pkce_verifier', verifier);
+          const response = await axiosInstance.get('/mobile/oauth/url', {
+            params: { code_challenge: challenge },
+          });
+          return response.data;
+        },
+      });
+
+      setUrl(data.url); // Trigger the browser to open
+    } catch (err: any) {
+      setErrorMessage('Failed to generate sign-in URL' + err);
+      setIsDisabled(false);
+      setIsClicked(false);
+    }
+  };
+
+  // OPEN BROWSER WHEN URL IS READY
   useEffect(() => {
-    if (!url || !isClicked || browserOpening.current) return; // CHANGED: added isClicked and ref guards
+    if (!url || !isClicked || browserOpening.current) return;
 
-    browserOpening.current = true; // ADDED: acquire lock before opening browser
+    browserOpening.current = true;
 
     const openBrowser = async () => {
-      // CHANGED: extracted async logic into a function
       try {
         if (!(await InAppBrowser.isAvailable())) {
           throw new Error('In-app browser not available');
         }
 
         const result = await InAppBrowser.openAuth(
-          url, // CHANGED: previously data.url
+          url,
           'oocakrn://oauth-callback',
           {
             showTitle: false,
@@ -63,32 +95,13 @@ export const GoogleSignInButton: React.FC = () => {
         setIsDisabled(false);
         setIsClicked(false);
       } finally {
-        browserOpening.current = false; // ADDED: release lock when browser operation finishes
+        browserOpening.current = false;
+        setUrl(null); // Clear the URL so it doesn't accidentally reopen
       }
     };
 
-    void openBrowser(); // CHANGED: invoke extracted function
-  }, [url, isClicked, exchangeCode]); // CHANGED: previously [data]
-
-  useEffect(() => {
-    if (error) {
-      const message = (error as Error).message;
-      setErrorMessage(
-        message.includes('429')
-          ? 'Too many sign-in attempts. Please wait and try again.'
-          : message,
-      );
-      setIsDisabled(false);
-      setIsClicked(false);
-    }
-  }, [error]);
-
-  const handleClick = () => {
-    if (browserOpening.current || isDisabled) return;
-    setErrorMessage(null);
-    setIsClicked(true);
-    setIsDisabled(true);
-  };
+    void openBrowser();
+  }, [url, isClicked, exchangeCode]);
 
   return (
     <View className="items-center">
