@@ -17,7 +17,6 @@ export const useEnableFaceId = () => {
       });
 
       useStore.getState().setIsFaceIdEnabled(true); // Keep Zustand updated
-      alert('Face ID successfully enabled!');
     } catch (error: any) {
       console.error('Failed to enable Face ID', error);
       alert(error.response?.data?.message || 'Failed to enable Face ID');

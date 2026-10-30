@@ -104,7 +104,7 @@ export const GoogleSignInButton: React.FC = () => {
   }, [url, isClicked, exchangeCode]);
 
   return (
-    <View className="items-center">
+    <View className="w-full">
       {errorMessage ? (
         <Text className="text-red-500 text-sm mb-2 text-center">
           {errorMessage}
