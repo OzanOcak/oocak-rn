@@ -1,15 +1,21 @@
-import React from 'react';
-import { ScrollView, Text } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LoginForm from '../../../components/auth/LoginForm';
 import { colors } from '../../../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { GoogleSignInButton } from '../../../components/oauth/GoogleSignInButton';
 import { FaceIdSignInButton } from '../../../components/faceid/FaceIdSignInButton';
+import { useEnclaveLogin } from '../../../hooks/enclave/useEnclaveLogin';
+import { useStore } from '../../../stores/useStore';
 
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const deviceId = useStore(state => state.deviceId);
+  const { mutate: loginWithEnclave, isPending } = useEnclaveLogin(setErrorMsg);
 
   return (
     <ScrollView
@@ -56,6 +62,32 @@ export default function SignInScreen() {
 
       {/* Face ID Button - It will hide itself automatically if not enabled in Zustand */}
       <FaceIdSignInButton />
+
+      {errorMsg ? (
+        <Text className="text-red-500 text-sm mb-2 text-center">
+          {errorMsg}
+        </Text>
+      ) : null}
+
+      {deviceId ? (
+        <Pressable
+          onPress={() => loginWithEnclave()}
+          disabled={isPending}
+          className="w-full py-3 mt-4 rounded-md items-center border"
+          style={{
+            backgroundColor: colors.bgMuted,
+            borderColor: colors.emerald,
+          }}
+        >
+          {isPending ? (
+            <ActivityIndicator color={colors.emerald} />
+          ) : (
+            <Text className="font-semibold" style={{ color: colors.emerald }}>
+              Sign in with Hardware Key
+            </Text>
+          )}
+        </Pressable>
+      ) : null}
     </ScrollView>
   );
 }

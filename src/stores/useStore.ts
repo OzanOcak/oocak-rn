@@ -20,6 +20,7 @@ export const useStore = create<Store>()(
         storage: createJSONStorage(() => AsyncStorage),
         partialize: state => ({
           isFaceIdEnabled: state.isFaceIdEnabled,
+          deviceId: state.deviceId,
         }),
       },
     ),

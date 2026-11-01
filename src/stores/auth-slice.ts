@@ -5,12 +5,14 @@ export type AuthSlice = {
   refreshTokenId: string;
   otpToken: string;
   isFaceIdEnabled: boolean;
+  deviceId: string;
 
   setToken: (accessToken: string) => void;
   clearToken: () => void;
   setRefreshTokenId: (refreshTokenId: string) => void;
   setOtpToken: (otpToken: string) => void;
   setIsFaceIdEnabled: (enabled: boolean) => void;
+  setDeviceId: (id: string) => void;
 };
 
 export const createAuthSlice = (
@@ -42,6 +44,13 @@ export const createAuthSlice = (
   setIsFaceIdEnabled: (enabled: boolean) => {
     set(state => {
       state.isFaceIdEnabled = enabled;
+    });
+  },
+
+  deviceId: '',
+  setDeviceId: (id: string) => {
+    set(state => {
+      state.deviceId = id;
     });
   },
 

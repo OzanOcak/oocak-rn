@@ -4,16 +4,19 @@ import {
   Text,
   ActivityIndicator,
   ScrollView,
-  Pressable,
+  Switch,
 } from 'react-native';
 import { colors } from '../theme/colors';
 import { useUserName } from '../hooks/roles/useUserName';
 import { EnableFaceIdButton } from '../components/faceid/EnableFaceIdButton';
-import { useEnclaveTest } from '../hooks/enclave/useEnclaveTest';
+import { useEnclaveEnrollment } from '../hooks/enclave/useEnclaveEnrollment';
+import { useStore } from '../stores/useStore';
 
 export default function ProfileScreen() {
   const { data: profile, isLoading, error } = useUserName();
-  const { testGenerate, testSign } = useEnclaveTest();
+  const deviceId = useStore(state => state.deviceId);
+  const { mutate: enrollDevice, isPending: isEnrolling } =
+    useEnclaveEnrollment();
 
   if (isLoading) {
     return (
@@ -105,37 +108,28 @@ export default function ProfileScreen() {
 
       <EnableFaceIdButton />
 
-      <Pressable
-        onPress={testGenerate}
-        style={{
-          padding: 15,
-          backgroundColor: 'blue',
-          marginTop: 20,
-          borderRadius: 8,
-        }}
+      <View
+        className="flex-row items-center justify-between p-4 rounded-lg mb-3 mt-4"
+        style={{ backgroundColor: colors.bgMuted }}
       >
-        <Text
-          style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}
-        >
-          1. Test Generate Key
-        </Text>
-      </Pressable>
-
-      <Pressable
-        onPress={testSign}
-        style={{
-          padding: 15,
-          backgroundColor: 'green',
-          marginTop: 10,
-          borderRadius: 8,
-        }}
-      >
-        <Text
-          style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}
-        >
-          2. Test Sign Challenge
-        </Text>
-      </Pressable>
+        <View>
+          <Text
+            className="text-base font-semibold"
+            style={{ color: colors.text }}
+          >
+            Hardware Enclave Login
+          </Text>
+          <Text className="text-xs" style={{ color: colors.textMuted }}>
+            Sign in with Secure Enclave
+          </Text>
+        </View>
+        <Switch
+          trackColor={{ false: '#767577', true: colors.emerald }}
+          onValueChange={() => enrollDevice()}
+          value={!!deviceId}
+          disabled={isEnrolling || !!deviceId}
+        />
+      </View>
     </ScrollView>
   );
 }
