@@ -1,11 +1,19 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+  Pressable,
+} from 'react-native';
 import { colors } from '../theme/colors';
 import { useUserName } from '../hooks/roles/useUserName';
 import { EnableFaceIdButton } from '../components/faceid/EnableFaceIdButton';
+import { useEnclaveTest } from '../hooks/enclave/useEnclaveTest';
 
 export default function ProfileScreen() {
   const { data: profile, isLoading, error } = useUserName();
+  const { testGenerate, testSign } = useEnclaveTest();
 
   if (isLoading) {
     return (
@@ -96,6 +104,38 @@ export default function ProfileScreen() {
       </Text>
 
       <EnableFaceIdButton />
+
+      <Pressable
+        onPress={testGenerate}
+        style={{
+          padding: 15,
+          backgroundColor: 'blue',
+          marginTop: 20,
+          borderRadius: 8,
+        }}
+      >
+        <Text
+          style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}
+        >
+          1. Test Generate Key
+        </Text>
+      </Pressable>
+
+      <Pressable
+        onPress={testSign}
+        style={{
+          padding: 15,
+          backgroundColor: 'green',
+          marginTop: 10,
+          borderRadius: 8,
+        }}
+      >
+        <Text
+          style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}
+        >
+          2. Test Sign Challenge
+        </Text>
+      </Pressable>
     </ScrollView>
   );
 }
