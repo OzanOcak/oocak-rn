@@ -1,22 +1,12 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  ScrollView,
-  Switch,
-} from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { colors } from '../theme/colors';
 import { useUserName } from '../hooks/roles/useUserName';
 import { EnableFaceIdButton } from '../components/faceid/EnableFaceIdButton';
-import { useEnclaveEnrollment } from '../hooks/enclave/useEnclaveEnrollment';
-import { useStore } from '../stores/useStore';
+import { EnableEnclaveButton } from '../components/enclave/EnableEnclaveButton';
 
 export default function ProfileScreen() {
   const { data: profile, isLoading, error } = useUserName();
-  const deviceId = useStore(state => state.deviceId);
-  const { mutate: enrollDevice, isPending: isEnrolling } =
-    useEnclaveEnrollment();
 
   if (isLoading) {
     return (
@@ -108,28 +98,7 @@ export default function ProfileScreen() {
 
       <EnableFaceIdButton />
 
-      <View
-        className="flex-row items-center justify-between p-4 rounded-lg mb-3 mt-4"
-        style={{ backgroundColor: colors.bgMuted }}
-      >
-        <View>
-          <Text
-            className="text-base font-semibold"
-            style={{ color: colors.text }}
-          >
-            Hardware Enclave Login
-          </Text>
-          <Text className="text-xs" style={{ color: colors.textMuted }}>
-            Sign in with Secure Enclave
-          </Text>
-        </View>
-        <Switch
-          trackColor={{ false: '#767577', true: colors.emerald }}
-          onValueChange={() => enrollDevice()}
-          value={!!deviceId}
-          disabled={isEnrolling || !!deviceId}
-        />
-      </View>
+      <EnableEnclaveButton />
     </ScrollView>
   );
 }
