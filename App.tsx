@@ -13,6 +13,7 @@ import PrivateAuthNavigator from './src/navigation/PrivateAuthNavigator';
 import RequestPasswordResetScreen from './src/screens/auth/public/RequestPasswordResetScreen';
 import { ActivityIndicator, View } from 'react-native';
 import { useSessionRestore } from './src/hooks/auth/useSessionRestore';
+import { useStoreHydration } from './src/hooks/useStoreHydration';
 
 const RootStack = createNativeStackNavigator();
 
@@ -31,6 +32,23 @@ const navTheme = {
 // Create an inner component for the Navigation
 function AppNavigator() {
   const { isRestoring } = useSessionRestore();
+  const hydrated = useStoreHydration();
+
+  //  Wait for Zustand before rendering the screens
+  if (!hydrated) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.bg,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.emerald} />
+      </View>
+    );
+  }
 
   if (isRestoring) {
     return (
@@ -90,7 +108,7 @@ function AppNavigator() {
   );
 }
 
-// 2. Keep your main App export clean
+//  main App export
 export default function App() {
   return (
     <Providers>

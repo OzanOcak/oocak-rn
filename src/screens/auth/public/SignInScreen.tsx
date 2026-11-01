@@ -14,7 +14,10 @@ export default function SignInScreen() {
   const navigation = useNavigation<any>();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const deviceId = useStore(state => state.deviceId);
+  const isFaceIdEnabled = useStore(state => state.isFaceIdEnabled);
+
   const { mutate: loginWithEnclave, isPending } = useEnclaveLogin(setErrorMsg);
 
   return (
@@ -61,7 +64,7 @@ export default function SignInScreen() {
       <GoogleSignInButton />
 
       {/* Face ID Button - It will hide itself automatically if not enabled in Zustand */}
-      <FaceIdSignInButton />
+      {isFaceIdEnabled ? <FaceIdSignInButton /> : null}
 
       {errorMsg ? (
         <Text className="text-red-500 text-sm mb-2 text-center">

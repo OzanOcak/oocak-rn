@@ -22,6 +22,7 @@ export const createAuthSlice = (
   refreshTokenId: '',
   otpToken: '',
   isFaceIdEnabled: false,
+  deviceId: '',
 
   setToken: (accessToken: string) => {
     set(state => {
@@ -47,7 +48,6 @@ export const createAuthSlice = (
     });
   },
 
-  deviceId: '',
   setDeviceId: (id: string) => {
     set(state => {
       state.deviceId = id;

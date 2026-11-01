@@ -33,13 +33,22 @@ export const useLogout = () => {
     mutationFn: logoutUser,
     mutationKey: ['logout'],
     onSettled: async () => {
-      // Delete ONLY the session token
+      // 1. Delete ONLY the session token from Keychain
       await Keychain.resetGenericPassword({ service: 'session-tokens' });
-      //  await Keychain.resetGenericPassword();
+
+      // 2. Clean up PKCE
       await AsyncStorage.removeItem('pkce_verifier');
+
+      // 3. Clear memory tokens (accessToken, refreshTokenId)
       useStore.getState().clearToken();
-      useStore.persist.clearStorage();
+
+      // 4. REMOVED: useStore.persist.clearStorage();
+      // We keep the storage so deviceId and isFaceIdEnabled survive.
+
+      // 5. Clear React Query cache
       queryClient.removeQueries({ queryKey: ['user'] });
+
+      // 6. Navigate back
       navigation.reset({ index: 0, routes: [{ name: 'HomeTab' }] });
     },
   });
