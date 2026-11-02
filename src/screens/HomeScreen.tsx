@@ -11,8 +11,9 @@ import { Cpu, ShieldCheck } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import { findApp } from '../data/apps';
 import FeatureCard from '../components/FeatureCard';
-import { useStore } from '../stores/useStore';
 import { useLogout } from '../hooks/auth/useLogout';
+import { useSelector } from 'react-redux';
+import { RootState } from '../stores';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -22,7 +23,8 @@ export default function HomeScreen() {
   const frontendPro = findApp('frontendpro')!;
   const authflow = findApp('authflow')!;
 
-  const accessToken = useStore(s => s.accessToken);
+  // Read from Redux
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const isSignedIn = !!accessToken;
   const logoutMutation = useLogout();
 

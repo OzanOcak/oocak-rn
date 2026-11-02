@@ -3,7 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Keychain from 'react-native-keychain';
 import axiosInstance from '../../lib/http/nodeAuthClient';
-import { useStore } from '../../stores/useStore';
+import { useDispatch } from 'react-redux';
+import { setRefreshTokenId, setToken } from '../../stores/auth-slice';
 
 type OauthExchangeData = { code: string };
 
@@ -23,12 +24,14 @@ export const useOauthExchange = (
   setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
 ) => {
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch(); // Initialize Redux dispatch
 
   return useMutation({
     mutationFn: exchangeOauthCode,
     onSuccess: async data => {
-      useStore.getState().setToken(data.accessToken);
-      useStore.getState().setRefreshTokenId(data.refreshTokenId);
+      // Dispatch to Redux
+      dispatch(setToken(data.accessToken));
+      dispatch(setRefreshTokenId(data.refreshTokenId));
 
       await Keychain.setGenericPassword(
         data.refreshTokenId,

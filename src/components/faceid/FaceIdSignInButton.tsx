@@ -1,35 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Pressable, Text, ActivityIndicator, View } from 'react-native';
 import { colors } from '../../theme/colors';
 import { useFaceIdLogin } from '../../hooks/faceid/useFaceIdLogin';
-import { useStore } from '../../stores/useStore';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../stores';
 
 export const FaceIdSignInButton: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { mutate: loginWithFaceId, isPending } =
     useFaceIdLogin(setErrorMessage);
 
-  // 1. Get the value from Zustand
-  const isFaceIdEnabled = useStore(state => state.isFaceIdEnabled);
-
-  // 2. Set up the hydration gate
-  const [hasHydrated, setHasHydrated] = useState(
-    useStore.persist.hasHydrated(),
+  // Read directly from Redux
+  const isFaceIdEnabled = useSelector(
+    (state: RootState) => state.auth.isFaceIdEnabled,
   );
 
-  useEffect(() => {
-    const unsubscribe = useStore.persist.onFinishHydration(() => {
-      setHasHydrated(true);
-    });
-
-    // In case hydration finished before this component mounted
-    setHasHydrated(useStore.persist.hasHydrated());
-
-    return unsubscribe;
-  }, []);
-
-  // 3. Wait for hydration, then check the boolean
-  if (!hasHydrated || !isFaceIdEnabled) {
+  // If not enabled, hide the button
+  if (!isFaceIdEnabled) {
     return null;
   }
 

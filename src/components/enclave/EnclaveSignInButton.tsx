@@ -1,35 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Pressable, Text, ActivityIndicator, View } from 'react-native';
 import { colors } from '../../theme/colors';
 import { useEnclaveLogin } from '../../hooks/enclave/useEnclaveLogin';
-import { useStore } from '../../stores/useStore';
+import { RootState } from '../../stores';
+import { useSelector } from 'react-redux';
 
 export const EnclaveSignInButton: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { mutate: loginWithEnclave, isPending } =
     useEnclaveLogin(setErrorMessage);
 
-  // 1. Get the deviceId from Zustand
-  const deviceId = useStore(state => state.deviceId);
+  // Read directly from Redux (PersistGate already handled hydration)
+  const deviceId = useSelector((state: RootState) => state.auth.deviceId);
 
-  // 2. Set up the hydration gate
-  const [hasHydrated, setHasHydrated] = useState(
-    useStore.persist.hasHydrated(),
-  );
-
-  useEffect(() => {
-    const unsubscribe = useStore.persist.onFinishHydration(() => {
-      setHasHydrated(true);
-    });
-
-    // In case hydration finished before this component mounted
-    setHasHydrated(useStore.persist.hasHydrated());
-
-    return unsubscribe;
-  }, []);
-
-  // 3. Wait for hydration, then check if deviceId exists
-  if (!hasHydrated || !deviceId) {
+  // If no deviceId, hide the button
+  if (!deviceId) {
     return null;
   }
 

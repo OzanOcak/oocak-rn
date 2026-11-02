@@ -3,12 +3,18 @@ import { View, Text, Switch, ActivityIndicator } from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import { colors } from '../../theme/colors';
 import { useEnableFaceId } from '../../hooks/faceid/useEnableFaceId';
-import { useStore } from '../../stores/useStore';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../stores';
+import { setIsFaceIdEnabled } from '../../stores/auth-slice';
 
 export const EnableFaceIdButton: React.FC = () => {
   const { enableFaceId } = useEnableFaceId();
-  const isEnabled = useStore(state => state.isFaceIdEnabled);
-  const setIsFaceIdEnabled = useStore(state => state.setIsFaceIdEnabled);
+  const dispatch = useDispatch();
+
+  // Read from Redux
+  const isEnabled = useSelector(
+    (state: RootState) => state.auth.isFaceIdEnabled,
+  );
 
   const [isPending, setIsPending] = useState(false);
 
@@ -21,7 +27,7 @@ export const EnableFaceIdButton: React.FC = () => {
         await Keychain.resetGenericPassword({ service: 'device-token' });
 
         // 2. Update Zustand
-        setIsFaceIdEnabled(false);
+        dispatch(setIsFaceIdEnabled(false));
       } catch (error) {
         console.error('Failed to disable Face ID', error);
       } finally {
@@ -30,7 +36,7 @@ export const EnableFaceIdButton: React.FC = () => {
     } else {
       // User wants to ENABLE Face ID
       setIsPending(true);
-      await enableFaceId(); // Your hook handles the Keychain and Zustand update
+      await enableFaceId(); // the hook handles the Keychain and Redux update
       setIsPending(false);
     }
   };

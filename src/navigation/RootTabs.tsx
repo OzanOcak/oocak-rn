@@ -5,13 +5,15 @@ import HomeScreen from '../screens/HomeScreen';
 import AppsStack from './AppsStack';
 import BlogStack from './BlogStack';
 import { colors } from '../theme/colors';
-import { useStore } from '../stores/useStore';
 import ProfileScreen from '../screens/ProfileScreen';
+import { useSelector } from 'react-redux';
+import { RootState } from '../stores';
 
 const Tab = createBottomTabNavigator();
 
 export default function RootTabs() {
-  const accessToken = useStore(s => s.accessToken);
+  // Read from Redux
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const isSignedIn = !!accessToken;
   return (
     <Tab.Navigator

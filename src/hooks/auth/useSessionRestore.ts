@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import * as Keychain from 'react-native-keychain';
+import { useDispatch, useSelector } from 'react-redux'; // <--- Standard hooks
 import axiosInstance from '../../lib/http/nodeAuthClient';
-import { useStore } from '../../stores/useStore';
+import { RootState } from '../../stores'; // Import the RootState type
+import { setToken, setRefreshTokenId } from '../../stores/auth-slice';
 
 export const useSessionRestore = () => {
   const [isRestoring, setIsRestoring] = useState(true);
-  const accessToken = useStore(state => state.accessToken);
+  const dispatch = useDispatch();
+
+  // Get the accessToken from Redux
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
     const restore = async () => {
@@ -42,9 +47,9 @@ export const useSessionRestore = () => {
           refreshTokenId: newId,
         } = refreshResponse.data;
 
-        // 3. Update Zustand
-        useStore.getState().setToken(newAccess);
-        useStore.getState().setRefreshTokenId(newId);
+        // 3. Update Redux
+        dispatch(setToken(newAccess));
+        dispatch(setRefreshTokenId(newId));
 
         // 4. Save the rotated token
         await Keychain.setGenericPassword(newId, newRefresh, {
@@ -58,7 +63,7 @@ export const useSessionRestore = () => {
     };
 
     restore();
-  }, [accessToken]);
+  }, [accessToken, dispatch]);
 
   return { isRestoring };
 };

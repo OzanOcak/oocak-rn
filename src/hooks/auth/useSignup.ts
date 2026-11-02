@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import axiosInstance from '../../lib/http/nodeAuthClient';
-import { useStore } from '../../stores/useStore';
+import { store } from '../../stores';
+import { setOtpToken } from '../../stores/auth-slice';
 
 type SignupResponse = {
   token: string;
@@ -40,7 +41,8 @@ export const useSignup = (setErrorMessage?: (msg: string | null) => void) => {
       console.log('User registered successfully!');
       // Web: localStorage.setItem('xg8a', data.token) → RN: Zustand
       if (data.token) {
-        useStore.getState().setOtpToken(data.token);
+        // Dispatch to Redux
+        store.dispatch(setOtpToken(data.token));
       }
       // Web: router.push('/verify-otp-registration') → RN: PrivateAuth nested screen
       navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRegistry' });

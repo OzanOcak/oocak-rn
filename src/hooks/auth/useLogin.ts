@@ -2,7 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
 import axiosInstance from '../../lib/http/nodeAuthClient';
-import { useStore } from '../../stores/useStore';
+import { store } from '../../stores';
+import { setToken, setRefreshTokenId } from '../../stores/auth-slice'; // Import the actions
 
 type LoginData = {
   email: string;
@@ -18,8 +19,9 @@ const loginUser = async (data: LoginData): Promise<void> => {
   if (!refreshTokenId) throw new Error('Refresh token ID not received');
   if (!refreshToken) throw new Error('Refresh token not received');
 
-  useStore.getState().setToken(accessToken);
-  useStore.getState().setRefreshTokenId(refreshTokenId);
+  // Dispatch to Redux instead of Zustand
+  store.dispatch(setToken(accessToken));
+  store.dispatch(setRefreshTokenId(refreshTokenId));
 
   // Save the refreshTokenId as the 'username' and the refreshToken as the 'password'
   await Keychain.setGenericPassword(refreshTokenId, refreshToken, {

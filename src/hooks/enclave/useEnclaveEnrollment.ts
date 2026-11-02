@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { NativeModules } from 'react-native';
 import axiosInstance from '../../lib/http/nodeAuthClient';
-import { useStore } from '../../stores/useStore';
+import { useDispatch } from 'react-redux';
+import { setDeviceId } from '../../stores/auth-slice';
 
 const { SecureEnclaveModule } = NativeModules;
 
@@ -18,17 +19,17 @@ const enrollDevice = async (): Promise<string> => {
 };
 
 export const useEnclaveEnrollment = () => {
-  const setDeviceId = useStore(state => state.setDeviceId);
+  const dispatch = useDispatch();
 
   return useMutation({
     mutationFn: enrollDevice,
     onSuccess: deviceId => {
-      setDeviceId(deviceId);
-      alert('Hardware Login Enabled!');
+      dispatch(setDeviceId(deviceId));
+      //alert('Hardware Login Enabled!');
     },
     onError: (error: any) => {
       console.error('Enrollment error:', error.response?.data || error);
-      alert('Failed to enable hardware login');
+      // alert('Failed to enable hardware login');
     },
   });
 };

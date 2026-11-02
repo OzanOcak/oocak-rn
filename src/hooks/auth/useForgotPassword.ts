@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import axiosInstance from '../../lib/http/nodeAuthClient';
-import { useStore } from '../../stores/useStore';
+import { useDispatch } from 'react-redux';
+import { setOtpToken } from '../../stores/auth-slice';
 
 type ForgotPasswordData = {
   email: string;
@@ -34,11 +35,13 @@ const forgotPassword = async (
 
 export const useForgotPassword = () => {
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch(); // Initialize Redux dispatch
 
   return useMutation({
     mutationFn: forgotPassword,
     onSuccess: data => {
-      useStore.getState().setOtpToken(data.token);
+      // Dispatch to Redux
+      dispatch(setOtpToken(data.token));
       navigation.replace('PrivateAuth', { screen: 'VerifyOtpRecovery' });
     },
     onError: (error: Error) => {

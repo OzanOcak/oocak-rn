@@ -3,9 +3,12 @@ import { useNavigation } from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useStore } from '../../stores/useStore';
 import Config from 'react-native-config';
 import { getDevHost } from '../../lib/http/getDevHost';
+
+// Redux Imports
+import { store } from '../../stores';
+import { clearToken } from '../../stores/auth-slice';
 
 // Raw axios — no interceptors. Logout must never trigger a refresh.
 const rawAxios = axios.create({
@@ -14,7 +17,7 @@ const rawAxios = axios.create({
 });
 
 const logoutUser = async (): Promise<void> => {
-  const refreshTokenId = useStore.getState().refreshTokenId;
+  const refreshTokenId = store.getState().auth.refreshTokenId;
 
   if (!refreshTokenId) return;
 
@@ -33,22 +36,15 @@ export const useLogout = () => {
     mutationFn: logoutUser,
     mutationKey: ['logout'],
     onSettled: async () => {
-      // 1. Delete ONLY the session token from Keychain
+      // Delete ONLY the session token
       await Keychain.resetGenericPassword({ service: 'session-tokens' });
-
-      // 2. Clean up PKCE
+      //  await Keychain.resetGenericPassword();
       await AsyncStorage.removeItem('pkce_verifier');
 
-      // 3. Clear memory tokens (accessToken, refreshTokenId)
-      useStore.getState().clearToken();
+      // Dispatch to Redux instead of Zustand
+      store.dispatch(clearToken());
 
-      // 4. REMOVED: useStore.persist.clearStorage();
-      // We keep the storage so deviceId and isFaceIdEnabled survive.
-
-      // 5. Clear React Query cache
       queryClient.removeQueries({ queryKey: ['user'] });
-
-      // 6. Navigate back
       navigation.reset({ index: 0, routes: [{ name: 'HomeTab' }] });
     },
   });

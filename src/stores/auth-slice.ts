@@ -1,64 +1,55 @@
-import { Store } from './useStore';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type AuthSlice = {
+export interface AuthState {
   accessToken: string;
   refreshTokenId: string;
   otpToken: string;
   isFaceIdEnabled: boolean;
   deviceId: string;
+}
 
-  setToken: (accessToken: string) => void;
-  clearToken: () => void;
-  setRefreshTokenId: (refreshTokenId: string) => void;
-  setOtpToken: (otpToken: string) => void;
-  setIsFaceIdEnabled: (enabled: boolean) => void;
-  setDeviceId: (id: string) => void;
-};
-
-export const createAuthSlice = (
-  set: (arg0: (state: Store) => void) => void,
-): AuthSlice => ({
+const initialState: AuthState = {
   accessToken: '',
   refreshTokenId: '',
   otpToken: '',
   isFaceIdEnabled: false,
   deviceId: '',
+};
 
-  setToken: (accessToken: string) => {
-    set(state => {
-      state.accessToken = accessToken;
-    });
-  },
-
-  setRefreshTokenId: (refreshTokenId: string) => {
-    set(state => {
-      state.refreshTokenId = refreshTokenId;
-    });
-  },
-
-  setOtpToken: (otpToken: string) => {
-    set(state => {
-      state.otpToken = otpToken;
-    });
-  },
-
-  setIsFaceIdEnabled: (enabled: boolean) => {
-    set(state => {
-      state.isFaceIdEnabled = enabled;
-    });
-  },
-
-  setDeviceId: (id: string) => {
-    set(state => {
-      state.deviceId = id;
-    });
-  },
-
-  clearToken: () => {
-    set(state => {
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setToken: (state, action: PayloadAction<string>) => {
+      state.accessToken = action.payload;
+    },
+    setRefreshTokenId: (state, action: PayloadAction<string>) => {
+      state.refreshTokenId = action.payload;
+    },
+    setOtpToken: (state, action: PayloadAction<string>) => {
+      state.otpToken = action.payload;
+    },
+    setIsFaceIdEnabled: (state, action: PayloadAction<boolean>) => {
+      state.isFaceIdEnabled = action.payload;
+    },
+    setDeviceId: (state, action: PayloadAction<string>) => {
+      state.deviceId = action.payload;
+    },
+    clearToken: state => {
       state.accessToken = '';
       state.refreshTokenId = '';
       state.otpToken = '';
-    });
+    },
   },
 });
+
+export const {
+  setToken,
+  setRefreshTokenId,
+  setOtpToken,
+  setIsFaceIdEnabled,
+  setDeviceId,
+  clearToken,
+} = authSlice.actions;
+
+export default authSlice.reducer;

@@ -23,10 +23,10 @@ export const useEnclaveTest = () => {
         'my-secret-challenge',
       );
       console.log('✅ Signature Generated:', signature);
-      alert('Signed successfully! Check Metro console.');
+      // alert('Signed successfully! Check Metro console.');
     } catch (e: any) {
       console.error('Sign Error:', e);
-      alert('Failed to sign: ' + e.message);
+      //alert('Failed to sign: ' + e.message);
     }
   };
 

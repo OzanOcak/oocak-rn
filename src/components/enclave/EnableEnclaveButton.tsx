@@ -2,18 +2,21 @@ import React from 'react';
 import { View, Text, Switch, ActivityIndicator } from 'react-native';
 import { colors } from '../../theme/colors';
 import { useEnclaveEnrollment } from '../../hooks/enclave/useEnclaveEnrollment';
-import { useStore } from '../../stores/useStore';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../stores';
+import { setDeviceId } from '../../stores/auth-slice';
 
 export const EnableEnclaveButton: React.FC = () => {
   const { mutate: enrollDevice, isPending } = useEnclaveEnrollment();
-  const deviceId = useStore(state => state.deviceId);
-  const setDeviceId = useStore(state => state.setDeviceId);
+  const dispatch = useDispatch();
+
+  const deviceId = useSelector((state: RootState) => state.auth.deviceId);
 
   const toggleSwitch = () => {
     if (deviceId) {
       // DISABLE: Clear the device ID from Zustand
-      setDeviceId('');
-      alert('Hardware Enclave Login disabled.');
+      dispatch(setDeviceId(''));
+      // alert('Hardware Enclave Login disabled.');
     } else {
       // ENABLE: Generate key and register with backend
       enrollDevice();

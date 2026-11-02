@@ -1,8 +1,15 @@
 import axios from 'axios';
-import { useStore } from '../../stores/useStore';
 import * as Keychain from 'react-native-keychain';
 import Config from 'react-native-config';
 import { getDevHost } from './getDevHost';
+
+// Redux Imports
+import { store } from '../../stores';
+import {
+  setToken,
+  setRefreshTokenId,
+  clearToken,
+} from '../../stores/auth-slice';
 
 const axiosInstance = axios.create({
   baseURL: __DEV__ ? `http://${getDevHost()}:3000/api` : Config.API_URL,
@@ -15,7 +22,8 @@ const axiosInstance = axios.create({
 // Request interceptor — attach access token
 axiosInstance.interceptors.request.use(
   config => {
-    const accessToken = useStore.getState().accessToken;
+    // Read from Redux
+    const accessToken = store.getState().auth.accessToken;
     if (accessToken) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
@@ -58,13 +66,15 @@ axiosInstance.interceptors.response.use(
       console.warn('* 401 interceptor...', error);
 
       try {
-        const refreshTokenId = useStore.getState().refreshTokenId;
+        // Read from Redux
+        const refreshTokenId = store.getState().auth.refreshTokenId;
+
         const credentials = await Keychain.getGenericPassword({
           service: 'session-tokens',
         });
 
         if (!credentials) {
-          useStore.getState().clearToken();
+          store.dispatch(clearToken());
           return Promise.reject(error);
         }
 
@@ -82,15 +92,19 @@ axiosInstance.interceptors.response.use(
           refreshTokenId: newId,
         } = refreshResponse.data;
 
-        useStore.getState().setToken(accessToken);
-        useStore.getState().setRefreshTokenId(newId);
-        await Keychain.setGenericPassword('refresh', refreshToken);
+        // Dispatch to Redux
+        store.dispatch(setToken(accessToken));
+        store.dispatch(setRefreshTokenId(newId));
+
+        await Keychain.setGenericPassword(newId, refreshToken, {
+          service: 'session-tokens',
+        });
 
         originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error('Failed to refresh access token:', refreshError);
-        useStore.getState().clearToken();
+        store.dispatch(clearToken());
         return Promise.reject(error);
       }
     }
