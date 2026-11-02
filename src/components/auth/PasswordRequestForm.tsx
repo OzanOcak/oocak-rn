@@ -120,7 +120,7 @@ export default function PasswordRequestForm() {
         <Pressable
           onPress={() => handleSubmit(onSubmit)()}
           disabled={forgotPasswordMutation.isPending}
-          className="w-full py-2 rounded-md items-center"
+          className="flex-row items-center justify-center px-4 py-3 rounded-md border w-ful"
           style={{
             backgroundColor: forgotPasswordMutation.isPending
               ? '#1e40af'
@@ -138,7 +138,7 @@ export default function PasswordRequestForm() {
 
         <Pressable
           onPress={() => navigation.replace('SignIn')}
-          className="w-full py-2 rounded-md items-center"
+          className="flex-row items-center justify-center px-4 py-3 rounded-md border w-ful"
           style={{ backgroundColor: '#16a34a' }}
         >
           <Text className="text-white font-semibold">Back to Login</Text>

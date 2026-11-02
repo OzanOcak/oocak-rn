@@ -178,7 +178,7 @@ export default function SignUpForm() {
       <Pressable
         onPress={() => handleSubmit(onSubmit)()}
         disabled={signupMutation.isPending}
-        className="w-full py-2 rounded-md items-center mt-2"
+        className="flex-row items-center justify-center px-4 py-3 rounded-md border w-ful"
         style={{
           backgroundColor: signupMutation.isPending ? '#1e40af' : '#2563eb',
         }}

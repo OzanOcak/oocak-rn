@@ -126,7 +126,7 @@ export default function LoginForm() {
         <Pressable
           onPress={() => handleSubmit(onSubmit)()}
           disabled={loginMutation.isPending}
-          className="w-full py-2 rounded-md items-center"
+          className="flex-row items-center justify-center px-4 py-3 rounded-md border w-ful"
           style={{
             backgroundColor: loginMutation.isPending ? '#1e40af' : '#2563eb',
           }}
@@ -140,7 +140,7 @@ export default function LoginForm() {
 
         <Pressable
           onPress={() => navigation.replace('SignUp')}
-          className="w-full py-2 rounded-md items-center"
+          className="flex-row items-center justify-center px-4 py-3 rounded-md border w-ful"
           style={{ backgroundColor: '#16a34a' }}
         >
           <Text className="text-white font-semibold">Create a new account</Text>
