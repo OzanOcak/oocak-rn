@@ -10,6 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../../theme/colors';
+import { useVerifyResetOtp } from '../../../hooks/auth/useVerifyResetOtp';
 
 const OTP_LENGTH = 6;
 const INITIAL_TIME = 255;
@@ -19,10 +20,12 @@ export default function VerifyOtpRecoveryScreen() {
   const insets = useSafeAreaInsets();
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [countdownFinished, setCountdownFinished] = useState(false);
   const inputsRef = useRef<Array<any>>([]);
+
+  const verifyMutation = useVerifyResetOtp();
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -75,17 +78,16 @@ export default function VerifyOtpRecoveryScreen() {
       return;
     }
 
-    setLoading(true);
-    try {
-      // TODO: useOtpVerify.mutate(code)
-      await new Promise<void>(r => setTimeout(r, 1000));
-      console.log('recovery OTP:', code);
-      navigation.replace('UpdatePassword');
-    } catch (err: any) {
-      Alert.alert('Error', err?.message ?? 'OTP verification failed');
-    } finally {
-      setLoading(false);
-    }
+    verifyMutation.mutate(code, {
+      onError: (error: any) => {
+        Alert.alert(
+          'Error',
+          error?.response?.data?.message ??
+            error?.message ??
+            'Verification failed',
+        );
+      },
+    });
   };
 
   const mm = Math.floor(timeLeft / 60);
@@ -144,7 +146,7 @@ export default function VerifyOtpRecoveryScreen() {
       {countdownFinished ? (
         <>
           <Pressable
-            onPress={() => navigation.replace('ForgotPassword')}
+            onPress={() => navigation.replace('RequestPasswordReset')}
             className="py-2 rounded-lg items-center"
             style={{ backgroundColor: '#2563eb' }}
           >

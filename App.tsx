@@ -13,13 +13,14 @@ import { colors } from './src/theme/colors';
 import { Providers } from './src/providers/Providers';
 import SignInScreen from './src/screens/auth/public/SignInScreen';
 import SignUpScreen from './src/screens/auth/public/SignUpScreen';
-import PrivateAuthNavigator from './src/navigation/PrivateAuthNavigator';
 import RequestPasswordResetScreen from './src/screens/auth/public/RequestPasswordResetScreen';
 import { useSessionRestore } from './src/hooks/auth/useSessionRestore';
 
 // Redux Imports
 import { store, persistor } from './src/stores';
 import VerifyOtpRegistryScreen from './src/screens/auth/private/VerifyOtpRegistryScreen';
+import VerifyOtpRecoveryScreen from './src/screens/auth/private/VerifyOtpRecoveryScreen';
+import UpdatePasswordScreen from './src/screens/auth/private/UpdatePasswordScreen';
 
 const RootStack = createNativeStackNavigator();
 
@@ -84,9 +85,14 @@ function AppNavigator() {
           options={{ title: 'Verify OTP' }}
         />
         <RootStack.Screen
-          name="PrivateAuth"
-          component={PrivateAuthNavigator}
-          options={{ presentation: 'modal', headerShown: false }}
+          name="VerifyOtpRecovery"
+          component={VerifyOtpRecoveryScreen}
+          options={{ title: 'Verify OTP' }}
+        />
+        <RootStack.Screen
+          name="UpdatePassword"
+          component={UpdatePasswordScreen}
+          options={{ title: 'Update Password' }}
         />
         <RootStack.Screen
           name="Profile"

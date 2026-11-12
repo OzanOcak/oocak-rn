@@ -15,6 +15,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { colors } from '../../../theme/colors';
+import { useUpdatePassword } from '../../../hooks/auth/useUpdatePassword';
 
 const passwordSchema = z
   .object({
@@ -37,7 +38,8 @@ export default function UpdatePasswordScreen() {
   const insets = useSafeAreaInsets();
   const [message, setMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+
+  const updateMutation = useUpdatePassword();
 
   const {
     control,
@@ -48,22 +50,20 @@ export default function UpdatePasswordScreen() {
     defaultValues: { newPassword: '', confirmPassword: '' },
   });
 
-  const onSubmit = async (data: PasswordInputs) => {
+  const onSubmit = (data: PasswordInputs) => {
     setMessage(null);
-    setSubmitting(true);
-
-    try {
-      // TODO: useUpdateUserPassword.mutate({ newPassword, confirmPassword, otps: true })
-      await new Promise<void>(r => setTimeout(r, 1000));
-      console.log('update password:', data.newPassword);
-      setIsSuccess(true);
-      setMessage('Password updated successfully!');
-    } catch (err: any) {
-      setIsSuccess(false);
-      setMessage(err?.message ?? 'Update failed');
-    } finally {
-      setSubmitting(false);
-    }
+    updateMutation.mutate(data.newPassword, {
+      onSuccess: () => {
+        setIsSuccess(true);
+        setMessage('Password updated successfully!');
+      },
+      onError: (error: any) => {
+        setIsSuccess(false);
+        setMessage(
+          error?.response?.data?.message ?? error?.message ?? 'Update failed',
+        );
+      },
+    });
   };
 
   return (
@@ -126,7 +126,7 @@ export default function UpdatePasswordScreen() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 secureTextEntry
-                editable={!submitting}
+                editable={!updateMutation.isPending}
               />
             )}
           />
@@ -164,7 +164,7 @@ export default function UpdatePasswordScreen() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 secureTextEntry
-                editable={!submitting}
+                editable={!updateMutation.isPending}
               />
             )}
           />
@@ -182,11 +182,13 @@ export default function UpdatePasswordScreen() {
         <View className="gap-4 mt-2">
           <Pressable
             onPress={() => handleSubmit(onSubmit)()}
-            disabled={submitting}
+            disabled={updateMutation.isPending}
             className="w-full py-2 rounded-md items-center"
-            style={{ backgroundColor: submitting ? '#1e40af' : '#2563eb' }}
+            style={{
+              backgroundColor: updateMutation.isPending ? '#1e40af' : '#2563eb',
+            }}
           >
-            {submitting ? (
+            {updateMutation.isPending ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-white font-semibold">Update</Text>

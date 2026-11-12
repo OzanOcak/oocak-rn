@@ -6,6 +6,8 @@ export interface AuthState {
   otpToken: string;
   isFaceIdEnabled: boolean;
   deviceId: string;
+  passwordResetToken: string;
+  passwordResetUserId: number;
 }
 
 const initialState: AuthState = {
@@ -14,6 +16,8 @@ const initialState: AuthState = {
   otpToken: '',
   isFaceIdEnabled: false,
   deviceId: '',
+  passwordResetToken: '',
+  passwordResetUserId: 0,
 };
 
 const authSlice = createSlice({
@@ -35,10 +39,19 @@ const authSlice = createSlice({
     setDeviceId: (state, action: PayloadAction<string>) => {
       state.deviceId = action.payload;
     },
+    setPasswordResetToken: (state, action: PayloadAction<string>) => {
+      state.passwordResetToken = action.payload;
+    },
+    setPasswordResetUserId: (state, action: PayloadAction<number>) => {
+      state.passwordResetUserId = action.payload;
+    },
     clearToken: state => {
       state.accessToken = '';
       state.refreshTokenId = '';
       state.otpToken = '';
+      // Also clear password reset fields on logout
+      state.passwordResetToken = '';
+      state.passwordResetUserId = 0;
     },
   },
 });
@@ -49,6 +62,8 @@ export const {
   setOtpToken,
   setIsFaceIdEnabled,
   setDeviceId,
+  setPasswordResetToken,
+  setPasswordResetUserId,
   clearToken,
 } = authSlice.actions;
 

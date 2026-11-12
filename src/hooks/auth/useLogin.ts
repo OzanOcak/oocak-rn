@@ -37,7 +37,7 @@ export const useLogin = (
   return useMutation({
     mutationFn: loginUser,
     onSuccess: () => {
-      navigation.goBack();
+      navigation.reset({ index: 0, routes: [{ name: 'Root' }] });
     },
     onError: (error: Error) => {
       console.error('Login failed:', error.message);
