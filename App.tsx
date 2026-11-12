@@ -19,6 +19,7 @@ import { useSessionRestore } from './src/hooks/auth/useSessionRestore';
 
 // Redux Imports
 import { store, persistor } from './src/stores';
+import VerifyOtpRegistryScreen from './src/screens/auth/private/VerifyOtpRegistryScreen';
 
 const RootStack = createNativeStackNavigator();
 
@@ -76,6 +77,11 @@ function AppNavigator() {
           name="RequestPasswordReset"
           component={RequestPasswordResetScreen}
           options={{ presentation: 'modal', title: 'Reset Password' }}
+        />
+        <RootStack.Screen
+          name="VerifyOtpRegistry"
+          component={VerifyOtpRegistryScreen}
+          options={{ title: 'Verify OTP' }}
         />
         <RootStack.Screen
           name="PrivateAuth"

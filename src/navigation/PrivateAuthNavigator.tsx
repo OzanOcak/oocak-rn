@@ -1,7 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import VerifyOtpRecoveryScreen from '../screens/auth/private/VerifyOtpRecoveryScreen';
-import VerifyOtpRegistryScreen from '../screens/auth/private/VerifyOtpRegistryScreen';
 import PrivateRoute from '../components/PrivateRoute';
 import { colors } from '../theme/colors';
 import UpdatePasswordScreen from '../screens/auth/private/UpdatePasswordScreen';
@@ -21,11 +20,6 @@ export default function PrivateAuthNavigator() {
         <Stack.Screen
           name="VerifyOtpRecovery"
           component={VerifyOtpRecoveryScreen}
-          options={{ title: 'Verify OTP' }}
-        />
-        <Stack.Screen
-          name="VerifyOtpRegistry"
-          component={VerifyOtpRegistryScreen}
           options={{ title: 'Verify OTP' }}
         />
         <Stack.Screen

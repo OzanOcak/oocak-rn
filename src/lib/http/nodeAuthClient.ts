@@ -35,6 +35,9 @@ axiosInstance.interceptors.request.use(
   },
 );
 
+console.log('__DEV__:', __DEV__);
+console.log('API BASE URL:', axiosInstance.defaults.baseURL);
+
 // Response interceptor — refresh on 401
 axiosInstance.interceptors.response.use(
   response => response,

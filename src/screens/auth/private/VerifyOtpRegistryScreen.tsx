@@ -10,6 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../../theme/colors';
+import { useVerifyOtp } from '../../../hooks/auth/useVerifyOtp';
 
 const OTP_LENGTH = 6;
 const INITIAL_TIME = 255;
@@ -19,10 +20,14 @@ export default function VerifyOtpRegistryScreen() {
   const insets = useSafeAreaInsets();
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const [countdownFinished, setCountdownFinished] = useState(false);
   const inputsRef = useRef<Array<any>>([]);
+
+  const verifyMutation = useVerifyOtp(msg => {
+    Alert.alert('Error', msg ?? 'Verification failed');
+  });
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -75,17 +80,7 @@ export default function VerifyOtpRegistryScreen() {
       return;
     }
 
-    setLoading(true);
-    try {
-      // TODO: useOtpVerifyRegistration.mutate(code)
-      await new Promise<void>(r => setTimeout(r, 1000));
-      console.log('registry OTP:', code);
-      // TODO: onSuccess → navigate to success screen
-    } catch (err: any) {
-      Alert.alert('Error', err?.message ?? 'OTP verification failed');
-    } finally {
-      setLoading(false);
-    }
+    verifyMutation.mutate({ otp: code });
   };
 
   const mm = Math.floor(timeLeft / 60);
@@ -159,11 +154,11 @@ export default function VerifyOtpRegistryScreen() {
       ) : (
         <Pressable
           onPress={handleSubmit}
-          disabled={loading}
+          disabled={verifyMutation.isPending}
           className="py-2 rounded-lg items-center"
           style={{ backgroundColor: loading ? '#1e40af' : '#2563eb' }}
         >
-          {loading ? (
+          {verifyMutation.isPending ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text className="text-white font-semibold">Verify OTP</Text>

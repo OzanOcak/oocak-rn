@@ -1,15 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import axiosInstance from '../../lib/http/nodeAuthClient';
-import { store } from '../../stores';
-import { setOtpToken } from '../../stores/auth-slice';
-
-type SignupResponse = {
-  token: string;
-  response: {
-    message: string;
-  };
-};
 
 type SignupDataType = {
   username: string;
@@ -17,18 +8,14 @@ type SignupDataType = {
   password: string;
 };
 
-const signupUser = async (data: SignupDataType): Promise<SignupResponse> => {
-  const response = await axiosInstance.post('/signup', data);
+const signupUser = async (data: SignupDataType) => {
+  const response = await axiosInstance.post('mobile/auth/signup', data);
 
   if (response.status !== 201) {
     throw new Error(response.data?.message || 'Registration failed');
   }
 
-  const authorizationHeader =
-    response.headers['authorization'] || response.headers['Authorization'];
-  const accessToken = authorizationHeader?.split(' ')[1];
-
-  return { response: response.data, token: accessToken };
+  return response.data;
 };
 
 export const useSignup = (setErrorMessage?: (msg: string | null) => void) => {
@@ -36,16 +23,9 @@ export const useSignup = (setErrorMessage?: (msg: string | null) => void) => {
 
   return useMutation({
     mutationFn: signupUser,
-    onSuccess: data => {
-      console.log('data', data);
-      console.log('User registered successfully!');
-      // Web: localStorage.setItem('xg8a', data.token) → RN: Zustand
-      if (data.token) {
-        // Dispatch to Redux
-        store.dispatch(setOtpToken(data.token));
-      }
-      // Web: router.push('/verify-otp-registration') → RN: PrivateAuth nested screen
-      navigation.navigate('PrivateAuth', { screen: 'VerifyOtpRegistry' });
+    onSuccess: () => {
+      console.log('[signup] navigating to VerifyOtpRegistry');
+      navigation.navigate('VerifyOtpRegistry');
     },
     onError: (error: any) => {
       const backendMessage =

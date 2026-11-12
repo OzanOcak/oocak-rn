@@ -11,7 +11,7 @@ type LoginData = {
 };
 
 const loginUser = async (data: LoginData): Promise<void> => {
-  const response = await axiosInstance.post('/mobile/auth/login', data);
+  const response = await axiosInstance.post('mobile/auth/login', data);
 
   const { accessToken, refreshToken, refreshTokenId } = response.data;
 
